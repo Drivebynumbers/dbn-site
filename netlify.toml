@@ -1,0 +1,29 @@
+[[redirects]]
+  from = "/position-size-calculator"
+  to = "/position-size-calculator.html"
+  status = 200
+
+[[redirects]]
+  from = "/mt4-analyzer"
+  to = "/mt4-analyzer.html"
+  status = 200
+
+[[redirects]]
+  from = "/services"
+  to = "/services.html"
+  status = 200
+
+[[redirects]]
+  from = "/risk-of-ruin"
+  to = "/risk-of-ruin.html"
+  status = 200
+
+[[redirects]]
+  from = "/prop-firm-tracker"
+  to = "/prop-firm-tracker.html"
+  status = 200
+
+[[redirects]]
+  from = "/fibonacci-calculator"
+  to = "/fibonacci-calculator.html"
+  status = 200
