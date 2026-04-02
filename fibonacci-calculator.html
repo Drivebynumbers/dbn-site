@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fibonacci Retracement Calculator — DriveByNumbers</title>
+<meta name="description" content="Free Fibonacci retracement & extension calculator. Enter your high and low price to instantly generate all key Fib levels for any trading pair.">
+<meta property="og:title" content="Fibonacci Calculator — DriveByNumbers">
+<meta property="og:description" content="Get every Fibonacci level instantly. Free tool for traders.">
+<meta property="og:type" content="website">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #21262d;
+    --gold: #c8952a;
+    --gold-light: #e8b04a;
+    --teal: #2e8b7a;
+    --teal-light: #3aa896;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --green: #3fb950;
+    --red: #f85149;
+    --purple: #8957e5;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(13,17,23,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+  }
+  .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .nav-logo-icon {
+    width: 32px; height: 32px; background: var(--gold);
+    border-radius: 7px; display: flex; align-items: center;
+    justify-content: center; font-weight: 900; font-size: 16px; color: #000;
+  }
+  .nav-logo-text { font-weight: 700; font-size: 15px; color: var(--text); }
+  .nav-links { display: flex; gap: 24px; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; transition: color .2s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-back { color: var(--muted); font-size: 14px; text-decoration: none; display:flex; align-items:center; gap:6px; transition: color .2s; }
+  .nav-back:hover { color: var(--gold); }
+
+  /* HERO */
+  .hero {
+    padding: 56px 24px 40px;
+    max-width: 780px; margin: 0 auto; text-align: center;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(200,149,42,0.12); border: 1px solid rgba(200,149,42,0.3);
+    color: var(--gold); border-radius: 20px;
+    padding: 4px 14px; font-size: 13px; font-weight: 600;
+    margin-bottom: 20px; letter-spacing: .5px;
+  }
+  .hero h1 { font-size: clamp(28px,5vw,44px); font-weight: 800; line-height: 1.15; margin-bottom: 16px; }
+  .hero h1 span { color: var(--gold); }
+  .hero p { font-size: 17px; color: var(--muted); max-width: 520px; margin: 0 auto; }
+
+  /* MAIN LAYOUT */
+  .main { max-width: 1000px; margin: 0 auto; padding: 0 24px 80px; }
+
+  /* CALCULATOR CARD */
+  .calc-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .calc-header {
+    background: linear-gradient(135deg, rgba(200,149,42,0.08), rgba(46,139,122,0.05));
+    border-bottom: 1px solid var(--border);
+    padding: 20px 24px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .calc-header-icon { font-size: 24px; }
+  .calc-header-title { font-weight: 700; font-size: 17px; }
+  .calc-header-sub { font-size: 13px; color: var(--muted); }
+
+  .calc-body { padding: 28px 24px; }
+
+  .input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+  @media(max-width:640px) { .input-grid { grid-template-columns: 1fr; } }
+
+  .field { display: flex; flex-direction: column; gap: 8px; }
+  .field label { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; }
+  .field input, .field select {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 16px; font-weight: 600;
+    padding: 12px 14px;
+    outline: none; transition: border-color .2s;
+    width: 100%;
+  }
+  .field input:focus, .field select:focus { border-color: var(--gold); }
+  .field input::placeholder { color: var(--muted); font-weight: 400; }
+
+  /* direction toggle */
+  .dir-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .dir-btn {
+    padding: 11px 8px; border-radius: 7px; border: 1px solid var(--border);
+    background: var(--bg); color: var(--muted); font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all .2s; text-align: center;
+  }
+  .dir-btn.active-bull { background: rgba(63,185,80,0.12); border-color: var(--green); color: var(--green); }
+  .dir-btn.active-bear { background: rgba(248,81,73,0.12); border-color: var(--red); color: var(--red); }
+  .dir-btn:hover:not(.active-bull):not(.active-bear) { border-color: var(--muted); color: var(--text); }
+
+  .calc-btn {
+    width: 100%;
+    background: var(--gold);
+    color: #000; font-weight: 800; font-size: 16px;
+    border: none; border-radius: 10px;
+    padding: 15px;
+    cursor: pointer; transition: background .2s, transform .1s;
+    letter-spacing: .3px;
+  }
+  .calc-btn:hover { background: var(--gold-light); transform: translateY(-1px); }
+  .calc-btn:active { transform: translateY(0); }
+
+  /* RESULTS */
+  .results-wrap { margin-top: 32px; }
+  .results-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .results-title { font-size: 15px; font-weight: 700; }
+  .results-direction {
+    font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 12px;
+  }
+  .dir-bull { background: rgba(63,185,80,0.12); color: var(--green); border: 1px solid rgba(63,185,80,0.3); }
+  .dir-bear { background: rgba(248,81,73,0.12); color: var(--red); border: 1px solid rgba(248,81,73,0.3); }
+
+  .levels-table { width: 100%; border-collapse: collapse; }
+  .levels-table thead th {
+    font-size: 12px; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .6px;
+    text-align: left; padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .levels-table tbody tr { transition: background .15s; }
+  .levels-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+  .levels-table td {
+    padding: 12px 12px; font-size: 15px;
+    border-bottom: 1px solid rgba(33,38,45,0.6);
+    vertical-align: middle;
+  }
+  .levels-table tr:last-child td { border-bottom: none; }
+
+  .level-pct {
+    font-weight: 800; font-size: 15px; width: 70px;
+  }
+  .level-price {
+    font-weight: 700; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 15px;
+    color: var(--text);
+  }
+  .level-label { color: var(--muted); font-size: 13px; }
+  .level-bar-cell { width: 30%; padding-right: 16px; }
+  .level-bar-wrap { background: rgba(255,255,255,0.05); border-radius: 3px; height: 4px; overflow: hidden; }
+  .level-bar { height: 100%; border-radius: 3px; transition: width .5s ease; }
+
+  /* Section divider */
+  .section-divider {
+    display: flex; align-items: center; gap: 12px; margin: 24px 0 16px;
+  }
+  .section-divider-line { flex: 1; height: 1px; background: var(--border); }
+  .section-divider-text { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; white-space: nowrap; }
+
+  /* Key level highlight */
+  .key-level td:first-child { border-left: 3px solid var(--gold); padding-left: 9px; }
+  .key-level .level-pct { color: var(--gold); }
+
+  /* pip distance */
+  .pip-dist { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* COPY BUTTON */
+  .copy-row {
+    display: flex; justify-content: flex-end; margin-top: 16px;
+  }
+  .copy-btn {
+    background: none; border: 1px solid var(--border); color: var(--muted);
+    border-radius: 7px; padding: 8px 16px; font-size: 13px; cursor: pointer;
+    transition: all .2s; display: flex; align-items: center; gap: 6px;
+  }
+  .copy-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .copy-btn.copied { border-color: var(--green); color: var(--green); }
+
+  /* INSIGHT PANEL */
+  .insight-panel {
+    background: rgba(200,149,42,0.06);
+    border: 1px solid rgba(200,149,42,0.2);
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-top: 24px;
+  }
+  .insight-panel-title {
+    font-size: 13px; font-weight: 700; color: var(--gold);
+    text-transform: uppercase; letter-spacing: .6px; margin-bottom: 12px;
+  }
+  .insight-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .insight-list li { font-size: 14px; color: var(--muted); display: flex; gap: 8px; }
+  .insight-list li::before { content: '→'; color: var(--gold); flex-shrink: 0; }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center; padding: 40px 20px; color: var(--muted); font-size: 14px;
+  }
+  .empty-state .empty-icon { font-size: 40px; margin-bottom: 12px; opacity: .5; }
+
+  /* INFO SECTION */
+  .info-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
+    gap: 16px; margin-top: 16px;
+  }
+  .info-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+  }
+  .info-card-icon { font-size: 24px; margin-bottom: 12px; }
+  .info-card-title { font-weight: 700; font-size: 15px; margin-bottom: 6px; }
+  .info-card-text { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  /* TOOLS NAV */
+  .tools-nav {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 24px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    margin-top: 32px;
+  }
+  .tools-nav-label { font-size: 13px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+  .tools-nav-links { display: flex; gap: 12px; flex-wrap: wrap; }
+  .tools-nav-link {
+    font-size: 13px; color: var(--muted); text-decoration: none;
+    padding: 5px 12px; border: 1px solid var(--border); border-radius: 20px;
+    transition: all .2s;
+  }
+  .tools-nav-link:hover { color: var(--gold); border-color: var(--gold); }
+
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="./" class="nav-logo">
+    <div class="nav-logo-icon">D</div>
+    <span class="nav-logo-text">DriveByNumbers</span>
+  </a>
+  <a href="./" class="nav-back">← All Tools</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">📐 Free Tool</div>
+  <h1>Fibonacci <span>Retracement</span> Calculator</h1>
+  <p>Enter any swing high and low. Get every key Fibonacci level instantly — retracements, extensions, and the golden zone.</p>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <div class="calc-card">
+    <div class="calc-header">
+      <div class="calc-header-icon">🌀</div>
+      <div>
+        <div class="calc-header-title">Fibonacci Level Generator</div>
+        <div class="calc-header-sub">Works on any pair, any timeframe — XAU/USD, EUR/USD, BTC, indices</div>
+      </div>
+    </div>
+
+    <div class="calc-body">
+
+      <div class="input-grid">
+        <div class="field">
+          <label>Swing High</label>
+          <input type="number" id="highPrice" placeholder="e.g. 3120.50" step="any">
+        </div>
+        <div class="field">
+          <label>Swing Low</label>
+          <input type="number" id="lowPrice" placeholder="e.g. 3080.00" step="any">
+        </div>
+        <div class="field">
+          <label>Direction</label>
+          <div class="dir-toggle">
+            <div class="dir-btn active-bull" id="btnBull" onclick="setDirection('bull')">↑ Bullish</div>
+            <div class="dir-btn" id="btnBear" onclick="setDirection('bear')">↓ Bearish</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="calc-btn" onclick="calculate()">Generate Fibonacci Levels</button>
+
+      <!-- RESULTS -->
+      <div class="results-wrap" id="results">
+        <div class="empty-state">
+          <div class="empty-icon">📐</div>
+          Enter your swing high and low above to generate all Fibonacci levels
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- WHAT ARE FIBONACCI LEVELS -->
+  <div style="margin-top:40px">
+    <div class="section-divider">
+      <div class="section-divider-line"></div>
+      <div class="section-divider-text">What are Fibonacci Levels?</div>
+      <div class="section-divider-line"></div>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-card-icon">🎯</div>
+        <div class="info-card-title">Retracement Levels</div>
+        <div class="info-card-text">Price rarely moves in a straight line. Fibonacci retracements identify where price tends to pull back before continuing the trend. The 38.2%, 50%, and 61.8% zones are where most reversals occur.</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">✨</div>
+        <div class="info-card-title">The Golden Zone (61.8%)</div>
+        <div class="info-card-text">The 61.8% level — derived from the golden ratio — is the most respected level in technical analysis. Institutions accumulate or distribute heavily at this level. Combined with price action, it becomes a high-probability entry zone.</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">🚀</div>
+        <div class="info-card-title">Extension Levels</div>
+        <div class="info-card-text">Extensions (127.2%, 161.8%) project how far price might move beyond the swing high or low. Traders use these as take-profit targets after price breaks the 100% level and continues in the original direction.</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">⚡</div>
+        <div class="info-card-title">How to Use This Tool</div>
+        <div class="info-card-text">Identify a clear swing high and swing low on your chart. Enter the prices above. Set direction based on your bias. The output gives you every level to watch — from entry zones to TP targets.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OTHER TOOLS -->
+  <div class="tools-nav">
+    <span class="tools-nav-label">Other Free Tools:</span>
+    <div class="tools-nav-links">
+      <a href="./position-size-calculator.html" class="tools-nav-link">📐 Position Size</a>
+      <a href="./mt4-analyzer.html" class="tools-nav-link">📊 MT4 Analyzer</a>
+      <a href="./risk-of-ruin.html" class="tools-nav-link">🎯 Risk of Ruin</a>
+      <a href="./prop-firm-tracker.html" class="tools-nav-link">🏆 Prop Firm Tracker</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let direction = 'bull';
+
+function setDirection(dir) {
+  direction = dir;
+  document.getElementById('btnBull').className = 'dir-btn' + (dir === 'bull' ? ' active-bull' : '');
+  document.getElementById('btnBear').className = 'dir-btn' + (dir === 'bear' ? ' active-bear' : '');
+}
+
+// Fibonacci levels config
+const FIB_LEVELS = [
+  { pct: 0,     label: 'Swing Low',       color: '#8b949e', key: false, type: 'retrace' },
+  { pct: 23.6,  label: 'Shallow retrace', color: '#58a6ff', key: false, type: 'retrace' },
+  { pct: 38.2,  label: 'Key support',     color: '#3aa896', key: true,  type: 'retrace' },
+  { pct: 50,    label: 'Midpoint',        color: '#c8952a', key: true,  type: 'retrace' },
+  { pct: 61.8,  label: '🔑 Golden zone',  color: '#c8952a', key: true,  type: 'retrace' },
+  { pct: 78.6,  label: 'Deep retrace',    color: '#8957e5', key: false, type: 'retrace' },
+  { pct: 100,   label: 'Swing High',      color: '#8b949e', key: false, type: 'retrace' },
+  { pct: 127.2, label: 'Ext. target 1',   color: '#3fb950', key: false, type: 'extend'  },
+  { pct: 161.8, label: 'Ext. target 2',   color: '#3fb950', key: true,  type: 'extend'  },
+  { pct: 261.8, label: 'Ext. target 3',   color: '#3fb950', key: false, type: 'extend'  },
+];
+
+function calcPrice(high, low, pct, isBull) {
+  const range = high - low;
+  if (isBull) {
+    if (pct <= 100) return high - (range * pct / 100);
+    else return high + (range * (pct - 100) / 100);
+  } else {
+    if (pct <= 100) return low + (range * pct / 100);
+    else return low - (range * (pct - 100) / 100);
+  }
+}
+
+function formatPrice(price, decimals) {
+  return price.toFixed(decimals);
+}
+
+function getDecimals(price) {
+  if (price > 1000) return 2;
+  if (price > 10) return 4;
+  return 5;
+}
+
+function getPipValue(high, low) {
+  const avg = (high + low) / 2;
+  if (avg > 500) return 10; // gold/indices - $10 per pip per lot (0.01 = 1 pip)
+  return 4; // forex - 4 decimal places
+}
+
+function calculate() {
+  const high = parseFloat(document.getElementById('highPrice').value);
+  const low = parseFloat(document.getElementById('lowPrice').value);
+
+  if (isNaN(high) || isNaN(low) || high <= 0 || low <= 0) {
+    alert('Please enter valid prices for the swing high and low.');
+    return;
+  }
+  if (high <= low) {
+    alert('Swing High must be greater than Swing Low.');
+    return;
+  }
+
+  const isBull = direction === 'bull';
+  const range = high - low;
+  const decimals = getDecimals(high);
+
+  // Build levels
+  const retraceLevels = FIB_LEVELS.filter(l => l.type === 'retrace');
+  const extendLevels = FIB_LEVELS.filter(l => l.type === 'extend');
+
+  function buildRows(levels) {
+    return levels.map(lvl => {
+      const price = calcPrice(high, low, lvl.pct, isBull);
+      const dist = Math.abs(price - (isBull ? high : low));
+      const distPct = (dist / (isBull ? high : low) * 100);
+
+      // Bar width relative to range
+      const barPct = Math.min((dist / (range * (lvl.type === 'extend' ? 2.618 : 1))) * 100, 100);
+
+      return `
+        <tr class="${lvl.key ? 'key-level' : ''}">
+          <td class="level-pct" style="color:${lvl.key ? 'var(--gold)' : 'var(--muted)'}">
+            ${lvl.pct}%
+          </td>
+          <td>
+            <div class="level-price">${formatPrice(price, decimals)}</div>
+          </td>
+          <td class="level-label">${lvl.label}</td>
+          <td class="level-bar-cell">
+            <div class="level-bar-wrap">
+              <div class="level-bar" style="width:${barPct}%;background:${lvl.color}"></div>
+            </div>
+          </td>
+        </tr>`;
+    }).join('');
+  }
+
+  const dirLabel = isBull
+    ? '<span class="results-direction dir-bull">↑ Bullish</span>'
+    : '<span class="results-direction dir-bear">↓ Bearish</span>';
+
+  // Key levels insight
+  const entry618 = formatPrice(calcPrice(high, low, 61.8, isBull), decimals);
+  const tp1618 = formatPrice(calcPrice(high, low, 161.8, isBull), decimals);
+  const sl = formatPrice(isBull ? low - (range * 0.1) : high + (range * 0.1), decimals);
+  const rangePips = range.toFixed(decimals);
+
+  const html = `
+    <div class="results-header">
+      <div class="results-title">Fibonacci Levels</div>
+      ${dirLabel}
+    </div>
+
+    <!-- Retrace table -->
+    <table class="levels-table">
+      <thead>
+        <tr>
+          <th>Level</th>
+          <th>Price</th>
+          <th>Zone</th>
+          <th>Distance</th>
+        </tr>
+      </thead>
+      <tbody>${buildRows(retraceLevels)}</tbody>
+    </table>
+
+    <div class="section-divider" style="margin-top:16px">
+      <div class="section-divider-line"></div>
+      <div class="section-divider-text">Extension Targets</div>
+      <div class="section-divider-line"></div>
+    </div>
+
+    <table class="levels-table">
+      <thead>
+        <tr>
+          <th>Level</th>
+          <th>Price</th>
+          <th>Zone</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>${buildRows(extendLevels)}</tbody>
+    </table>
+
+    <div class="insight-panel" style="margin-top:24px">
+      <div class="insight-panel-title">📊 Trade Setup Ideas</div>
+      <ul class="insight-list">
+        <li>Range: <strong>${rangePips}</strong> points (${isBull ? 'low to high' : 'low to high'})</li>
+        <li>${isBull ? 'Bullish' : 'Bearish'} entry zone: watch for price action at the <strong>61.8% level (${entry618})</strong></li>
+        <li>Conservative TP target: <strong>161.8% extension (${tp1618})</strong></li>
+        <li>Invalidation: close ${isBull ? 'below' : 'above'} <strong>${formatPrice(isBull ? low : high, decimals)}</strong> (the swing ${isBull ? 'low' : 'high'})</li>
+        <li>Best used when Fib levels align with structure, EMA, or supply/demand zones</li>
+      </ul>
+    </div>
+
+    <div class="copy-row">
+      <button class="copy-btn" id="copyBtn" onclick="copyLevels(${high}, ${low}, ${isBull ? 1 : 0}, ${decimals})">
+        📋 Copy All Levels
+      </button>
+    </div>
+  `;
+
+  document.getElementById('results').innerHTML = html;
+}
+
+function copyLevels(high, low, isBullInt, decimals) {
+  const isBull = isBullInt === 1;
+  let text = `Fibonacci Levels (${isBull ? 'Bullish' : 'Bearish'}) | High: ${high} | Low: ${low}\n`;
+  text += '─────────────────────────────\n';
+  FIB_LEVELS.forEach(lvl => {
+    const price = calcPrice(high, low, lvl.pct, isBull);
+    text += `${String(lvl.pct + '%').padEnd(8)} ${formatPrice(price, decimals).padStart(12)}   ${lvl.label}\n`;
+  });
+  text += '\nGenerated by DriveByNumbers — drivebynumbers.netlify.app';
+
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    if (btn) {
+      btn.textContent = '✓ Copied!';
+      btn.className = 'copy-btn copied';
+      setTimeout(() => {
+        btn.textContent = '📋 Copy All Levels';
+        btn.className = 'copy-btn';
+      }, 2500);
+    }
+  });
+}
+
+// Enter key triggers calculate
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') calculate();
+});
+</script>
+</body>
+</html>
