@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI For Your Business — DriveByNumbers</title>
+<meta name="description" content="We build custom AI tools, automations, and websites for small businesses. No agencies, no fluff — just results.">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #21262d;
+    --gold: #c8952a;
+    --gold-light: #e8b04a;
+    --teal: #2e8b7a;
+    --teal-light: #3aa896;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --green: #3fb950;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; }
+
+  /* Nav */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(13,17,23,0.95); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px; height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .nav-logo-icon { width: 32px; height: 32px; background: var(--gold); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; color: #000; }
+  .nav-logo-text { font-weight: 700; font-size: 17px; color: var(--text); }
+  .nav-logo-text span { color: var(--gold); }
+  .nav-cta { background: var(--gold); color: #000; font-weight: 700; padding: 8px 18px; border-radius: 6px; text-decoration: none; font-size: 14px; }
+  .nav-cta:hover { background: var(--gold-light); }
+
+  /* Layout */
+  .container { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+  section { padding: 80px 0; }
+  .section-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); font-weight: 700; margin-bottom: 12px; }
+  .section-title { font-size: clamp(28px, 4vw, 44px); font-weight: 900; line-height: 1.1; margin-bottom: 16px; }
+  .section-sub { color: var(--muted); font-size: 16px; line-height: 1.7; max-width: 560px; }
+  hr { border: none; border-top: 1px solid var(--border); }
+
+  /* Hero */
+  .hero {
+    min-height: 90vh; display: flex; align-items: center;
+    padding: 80px 20px; position: relative; overflow: hidden;
+  }
+  .hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 30%, rgba(200,149,42,0.07) 0%, transparent 70%); pointer-events: none; }
+  .hero-inner { position: relative; max-width: 1040px; margin: 0 auto; width: 100%; }
+  .hero-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(200,149,42,0.1); border: 1px solid rgba(200,149,42,0.25); color: var(--gold); padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 24px; }
+  .hero h1 { font-size: clamp(36px, 6vw, 66px); font-weight: 900; line-height: 1.05; margin-bottom: 20px; letter-spacing: -1.5px; max-width: 760px; }
+  .hero h1 em { color: var(--gold); font-style: normal; }
+  .hero p { font-size: clamp(16px, 2vw, 20px); color: var(--muted); max-width: 560px; margin-bottom: 36px; }
+  .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 56px; }
+  .btn-gold { background: var(--gold); color: #000; font-weight: 700; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-size: 16px; }
+  .btn-gold:hover { background: var(--gold-light); }
+  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 14px 28px; border-radius: 8px; text-decoration: none; font-size: 16px; }
+  .btn-ghost:hover { border-color: var(--teal); color: var(--teal-light); }
+  .hero-proof { display: flex; gap: 32px; flex-wrap: wrap; }
+  .proof-item { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); }
+  .proof-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; flex-shrink: 0; }
+
+  /* Problem section */
+  #problem { background: var(--surface); }
+  .problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+  @media(max-width:700px) { .problem-grid { grid-template-columns: 1fr; } }
+  .pain-list { list-style: none; margin-top: 24px; }
+  .pain-item { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); font-size: 15px; }
+  .pain-item:last-child { border-bottom: none; }
+  .pain-x { color: #f85149; font-weight: 700; font-size: 18px; flex-shrink: 0; }
+  .solution-box { background: var(--bg); border: 1px solid rgba(200,149,42,0.3); border-radius: 12px; padding: 32px; position: relative; overflow: hidden; }
+  .solution-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--gold), var(--teal)); }
+  .solution-item { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px; line-height: 1.5; }
+  .solution-item:last-child { border-bottom: none; }
+  .solution-check { color: var(--green); font-weight: 700; font-size: 16px; flex-shrink: 0; }
+
+  /* Services */
+  #services { background: var(--bg); }
+  .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-top: 48px; }
+  .service-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; transition: border-color 0.2s, transform 0.2s; }
+  .service-card:hover { border-color: var(--gold); transform: translateY(-2px); }
+  .service-icon { font-size: 36px; margin-bottom: 14px; }
+  .service-name { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+  .service-desc { color: var(--muted); font-size: 14px; line-height: 1.6; margin-bottom: 16px; }
+  .service-examples { list-style: none; }
+  .service-examples li { font-size: 13px; color: var(--muted); padding: 4px 0; display: flex; gap: 8px; }
+  .service-examples li::before { content: '→'; color: var(--gold); flex-shrink: 0; }
+  .service-price { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 13px; color: var(--gold); font-weight: 700; }
+
+  /* Process */
+  #process { background: var(--surface); }
+  .process-steps { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-top: 48px; }
+  .process-step { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 24px; position: relative; }
+  .step-number { font-size: 48px; font-weight: 900; color: rgba(200,149,42,0.15); line-height: 1; margin-bottom: 8px; }
+  .step-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .step-time { margin-top: 12px; font-size: 12px; color: var(--teal-light); font-weight: 700; }
+
+  /* Why us */
+  #why { background: var(--bg); }
+  .why-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-top: 48px; }
+  .why-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px; }
+  .why-icon { font-size: 26px; margin-bottom: 10px; }
+  .why-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .why-text { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  /* Pricing */
+  #pricing { background: var(--surface); }
+  .pricing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-top: 48px; }
+  .pricing-card { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 28px; position: relative; }
+  .pricing-card.featured { border-color: rgba(200,149,42,0.5); }
+  .pricing-card.featured::before { content: 'MOST POPU { content: 'MOST POPU { contR 0; left: 0; right: 0; heigh-on: re3px; b* Pro; }
+  .service-icon X(-5}
+  .lor: #000; font-weight: 700; padding: 14px ted); l1n-bottom: 8px; }
+  .selative; ovx; fxt-decoration: none;rder-twhtto: 760les lplay: flex; a { contiweight: 900; colline-hletter-spacing: 1px; color: var(--gold); fo0 .heroight: 700; margin-bottom: 12px; }
+  .section-title { ckground: var(--bgadding-tt: 900; colo0: rgba(200,149,42,0.15ection-title { 4kground: var(--bgadding}
+  .nat: 700; margin-bottom: 8px; }
+40.15); linet { width: 8px; heighr(--bg font-size: 14px; line-height: 1.6; margin-bo-spacing: -1.5px; max-ion-item:last-child { ghr(--bg 'MOST service-examples li { ero h1 { font-size: clamp(ghr(--bg 'MOST se: var(--muted); pr-bottom: 1px 7lid var(--border); font-size: 14px; line-heighadding: 12px 0; borde0e: clamp(ghr(--bg 'MOST se: : none; }
+  .solution-check { color: var 'MO); font-weight: 700; font-size:-price { margin-top:re { cont); coadding: 1block-hletteedia(dth:700px)tom: 1px solidecoration: none; font: 16px; flex-shrink: 0; }
+
+  /5}
+  .nav-logo-icon { width: 32pxre { cont);.ld); color: #000; font-weight: 700; padding:  32pxre { cont);.ld);gold-light); }
+  .btn-ghost { background: trare { cont);.out-ion: 1px solidlor: var(--text); padding: 14px 28px; border-: trare { cont);.out-ion--gold); transform: translateY(-2px)v-cta { background: va { bacCx; mcth: 104#cx; mcth  .why-grid { display: grid; gcx; mct; max-wide-columns: 1fr 1fr; gap: 60px; align-items: center; }
+  @media(max-widtstartx) { .problem-grid { grid-templatcx; mct; max-wid } }
+  .pain-list { list-style: noncx; mct;d:hov); border: 1px solid var(--border); border-radius: 12px; padding: 28px; transition: border-co3ize: 26px;d:ho-rowwide-columns: 1fr 1fr; gap: 60px; align-items: center; 1ize: 26px;d:ho-der:pize: 12px;examples { list-styd:ho-der:pixt-transadding: 1block-ht: 600; margin-bottom: 24px; }
+  .hero h1 { font-s6ne-height: 1.6; }
+
+  /* Pt-styd:ho-der:piinput,tyd:ho-der:piselect,tyd:ho-der:pibordareasplay: { display: iner: 1px solid var(--border); border-radius: 12px; paddilay: : 14px 28px; border-radius: 8p1x; font-size: 13px; font7 var(--muted); }
+  .lay: out-ion- .btn-ghost:kMacSystinherit0.2s, transform 0.2s; }
+  .serv: absolutd:ho-der:piinput:focus,tyd:ho-der:piselect:focus,tyd:ho-der:pibordarea:focus); transform: translateY(-2px)solutd:ho-der:pibordareasp flex; align-1x; maxT sed); oldtic: clamp(1d:ho-submi; backgrounay: iner: 1px solid var(ight: 700; padding: 14px 32px; border-radius: 8p3lidecoration: none; fontpx solid var(-curs padhero-in-ghost:hover { border-cod:ho-submi;gold-light); }
+  .btn-ghost { background: tracx; mct; mfoction-laberd { bckground: cx; mct; mfoch3bottom: 10px; }4n-bottom: 8px; }
+  .service-desc { co1ize: 26px;cx; mct; mfocpt-size: 14px; line-height: 1.6; marg5idth: 560px; }
+  hr { boo h1 { font-sickground: cx; mct;r(-tservice-examples li { font-cx; mct;r(-t; padding: 12px 0; bordeion: border-cosolid var(--border); font-size: 14px; line-height: 1.5; }
+  .solufont-cx; mct;r(-t: none; }
+  .solution-check { color: var mct; in-bottom: 10px; }0lution-box { background:  mct;or: vareight: 1.6; }
+
+  /* Pt-stydmct;or: vstroace);: 14px 28px; border-adding: 1block-h: 12pxuc(--bgbamax-wide-columns var(--0.1); border: 1p63,185,80ba(200,149,42,0.25); color: va63,185,80ba(3px)v-cta { backgrnt-sizetom: 1px solidecoration: none; font-sizeedia(dth:700px): 12px; color: var(--teal-lighild { b { bacFoox; m: 104foox; m); border: 1px solid var(--border); r); font-size: 13px; color: varborder-co3ize }0luti-sizeedia(dth:700px)er-cod:ox; -I', x; flex-wrap: wrap; marg}0lutint-weight: 900; font-size:om: 56px; }
+  .btn-gold { backg1ize: 26px;d:ox; -I', x;avareight: 1.6; }
+
+  /* P-size: 14px; }
+  .nav-cta:hover { background:d:ox; -I', x;agold-lighrm: translateY(-2px)solufoox; mpt-size: 14px; line-height: 1.6; marg3ckgrou</#0d1117</>
+<meta); c>
+
+<nav17;
+<a href="/"lor:ss=" var(--g">lay: <divlor:ss=" var(--g; in-">D</div>lay: <}
+  .or:ss=" var(--g;-siz">D nam<}
+  >By</#
+  >"descript#
+  >7;
+</a>7;
+<divl#0d11="lex-wrap wrapedia(max-widont-siz mar}0lu">lay: <a href="/"l#0d11="ize: 1px; line-heig-size: 14px; }
+ .nav-t: 1.6; maback">← Tn: naceTites</a>7;
+: <a href="#cx; mct"lor:ss=" vart);">Get;avFnt- Quox;</a>7;
+</div>l</nav17
+<!-- HERO --g: #ground:or:ss=" gap">7;
+<divlor:ss=" gap(--"></div>lay<divlor:ss=" gap( max-">lay: <divlor:ss="flex; al">🤖 webackgroundenciSs, no</title></div>lay: <h1>mbers</title>
+Runs Fnoner<br>With <emriveDonacethe Work.</emr</>1>lay: <p>C, and websites for small businesses. No ag
+  :matitgencies, no fluff —ethat can't;afencdbsi wnone nt-sincimnavy nd:thnac�ethat don't;work.</p>lay: <divlor:ss="flex;14px">lay: : <a href="#cx; mct"lor:ss=": var(--">Get;avFnt- Quox; →</a>7;
+: : <a href="#id; grid"lor:ss=": varvar(">St- What Wes</}
+ </a>7;
+: </div>lay: <divlor:ss="flex;ght: ">lay: : <divlor:ss=" align-ite"><divlor:ss=" aligndot"></div>NoxT  margis. Pay p; mprojgro.</div>lay: : <divlor:ss=" align-ite"><divlor:ss=" aligndot"></div>Delnam0,14in days.">
+timnaths.</div>lay: : <divlor:ss=" align-ite"><divlor:ss=" aligndot"></div>Batitgsi mctu, ny get;used.</div>lay: </div>lay</div>l</#ground17
+<hr17
+<!-- PROBLEM --g: #ground:id=" alolum">7;
+<divlor:ss="px; margi">lay: <divlor:ss="e-columns: 1">lay: : <div>lay: : : <divlor:ss="12px; text-tr">The em { ba</div>lay: : : <h2lor:ss="12px; tent-we">Mnt; Ss, no</title>��eAre LeavnaceMnavy nd:the Ta{ b</>2>lay: : : <ullor:ss="e; margin">lay: : : : <lilor:ss="e; ma-ite"><}
+  .or:ss="nt-wei">✗pt#
+  > Spen nacehbers nd:tas x;av$10/mnathbsitesizu
+  hnes b</li>lay: : : : <lilor:ss="e; ma-ite"><}
+  .or:ss="nt-wei">✗pt#
+  > Paynace results $5,ing+genciases. No ethat doesn't;px;oldt</li>lay: : : : <lilor:ss="e; ma-ite"><}
+  .or:ss="nt-wei">✗pt#
+  > Manu, ny , tweriacethe s-weis, and; mquesll bu 30 nt-sx;avday</li>lay: : : : <lilor:ss="e; ma-ite"><}
+  .or:ss="nt-wei">✗pt#
+  > Noxvisibility4insi what's mctu, ny workiaceid:the b/title></li>lay: : : : <lilor:ss="e; ma-ite"><}
+  .or:ss="nt-wei">✗pt#
+  > Compent-ors /titg webw }
+e you're sll nostuckeid:spreadsheet></li>lay: : : </ul>lay: : </div>lay: : <divlor:ss="ent: ''; pos">lay: : : <divlor:ss="12px; text-tr"l#0d11="tn-gold { back{ bo">The Fix</div>lay: : : <divlor:ss="ent: ''; -ite"><}
+  .or:ss="(--green); fon">✓pt#
+  > Ans, and webchat { ethat hnes bsis, and; mquesll bu 24/7g
+  :withidthyou</div>lay: : : <divlor:ss="ent: ''; -ite"><}
+  .or:ss="(--green); fon">✓pt#
+  > Ar small buethat comaxcthyourbsitesinesskl nomanu, vdata nt-ry</div>lay: : : <divlor:ss="ent: ''; -ite"><}
+  .or:ss="(--green); fon">✓pt#
+  > Anh; }-px;oldtitg es. No ematitgid:asesek.">
+tithnt- mnaths</div>lay: : : <divlor:ss="ent: ''; -ite"><}
+  .or:ss="(--green); fon">✓pt#
+  > Andashbo; bothat showshyou exmctny what's workiacenessehat isn't</div>lay: : : <divlor:ss="ent: ''; -ite"><}
+  .or:ss="(--green); fon">✓pt#
+  > Flaton:o e-surface
+  :noxT  margis.">
+< va-susts.">
+< resuybtn-kup</div>lay: : </div>lay: </div>lay</div>l</#ground17
+<hr17
+<!-- SERVICES --g: #ground:id="id; grid">7;
+<divlor:ss="px; margi">lay: <divlor:ss="12px; text-tr">What Wes</}
+ </div>lay: <h2lor:ss="12px; tent-we">Six Thnac�eThat Mld-<br>the Nees bdenciSs, no</title></>2>lay: <plor:ss="12px; tesub">Eoldymprojgro is scoped,e-sured,enessdelnam0,14upfrx;  justscope cnt-p.">
+<hberny billface va-susts.</p>lay: <divlor:ss="id; grid-temp">llay: : <divlor:ss="ecolor: var(">lay: : : <divlor:ss="12x; margin-">🤖</div>lay: : : <divlor:ss="epx; font-we"riveC, and; mChat { </div>lay: : : <divlor:ss="epx; fon fon"rins, and web:ssginant.2s,itld nd:yourbb/title>
+<metproducts."FAQs,e-surfac,e-oliults. Sits nd:yourbes. No eness, twersis, and; mquesll bu ininantly, 24/7.</div>lay: : : <ullor:ss=" { content: '→">lay: : : : <li>Ts,itld nd:yourbmctu, "FAQenessproduct  mfo</li>lay: : : : <li>Eour ao agsi you encico '�xmquesll bu</li>lay: : : : <li>Works nd:anybes. No , Shopify, nciWix</li>lay: : : : <li>Speaks:yourbbrnes'agsin enessrsetu re</li>lay: : : </ul>lay: : : <divlor:ss="epx; fon-sure">Frnd $500 · Delnam0,14in 5 days</div>lay: : </div>llay: : <divlor:ss="ecolor: var(">lay: : : <divlor:ss="12x; margin-">⚡</div>lay: : : <divlor:ss="epx; font-we"r</title>
+Ar small b</div>lay: : : <divlor:ss="epx; fon fon"rComaxcthyourbappsinesselnmin:o emanu, vwork. When X hnppens,eY hnppensfor smallc, ny 
+  :withidthyou liftitg a fitger.</div>lay: : : <ullor:ss=" { content: '→">lay: : : : <li>New lor:  →for s-upd:o einr { odym+">
+tify team</li>lay: : : : <li>F:hovsubmissgnd:→fCRMm+"emailm+"ur Bndar</li>lay: : : : <li>Invoding}one;→ffollow-upxT m rgbcieequencb</li>lay: : : : <li>Revice; let,14→for s-respoess+ loggsi sheet</li>lay: : : </ul>lay: : : <divlor:ss="epx; fon-sure">Frnd $350 · Delnam0,14in 3 days</div>lay: : </div>llay: : <divlor:ss="ecolor: var(">lay: : : <divlor:ss="12x; margin-">🌐</div>lay: : : <divlor:ss="epx; font-we"rH; }-Cx;oldtitg Ws. No </div>lay: : : <divlor:ss="epx; fon fon"rinfast,e-sofessgnd, vws. No ematitgsi turnxvisi-ors insi s, and; � just;avgap: 60p 
+  :a pva-ose-matitgpx;oldsgnd:machion:enciyourbspecificbb/title>.</div>lay: : : <ullor:ss=" { content: '→">lay: : : : <li>Mobile-first,eloads4in urgbci2ckgroesu</li>lay: : : : <li>SEO-opnt-iz,14frnd day ndb</li>lay: : : : <li>Cx; mcthd:hov+"emailmcapOST ematitgid</li>lay: : : : <li>Cxpyberitten enciyou.">
+ti: 6ceholgbci-siz</li>lay: : : </ul>lay: : : <divlor:ss="epx; fon-sure">Frnd $800 · Delnam0,14in 7 days</div>lay: : </div>llay: : <divlor:ss="ecolor: var(">lay: : : <divlor:ss="12x; margin-">📊</div>lay: : : <divlor:ss="epx; font-we"r</title>
+Dashbo; b</div>lay: : : <divlor:ss="epx; fon fon"rintitg bdscnt-nothat showshyou the ont-weuethat malx; m
+  :rer {u , leads,gpx;oldsgnds,gpxst>
+<metpull,14lnam4frnd yourbexginiacetites.</div>lay: : : <ullor:ss=" { content: '→">lay: : : : <li>Comaxctagsi Strip , Shopify, Goog bdAd, yllcu</li>lay: : : : <li>Daily"emailmsumtn-ygsi your4inpos</li>lay: : : : <li>Alldts when snd;thnac go agwroac</li>lay: : : : <li>ustm condiggiacethrough 5 diffenone;apps</li>lay: : : </ul>lay: : : <divlor:ss="epx; fon-sure">Frnd $600 · Delnam0,14in 5 days</div>lay: : </div>llay: : <divlor:ss="ecolor: var(">lay: : : <divlor:ss="12x; margin-">✍️</div>lay: : : <divlor:ss="epx; font-we"riveC: 900; Engia </div>lay: : : <divlor:ss="epx; fon fon"rins, and web 'Segoethat reserao ag'; prnes snci, v lets,e-soduct ild custom s,eemailusinessbloggt: 900;
+<met2s,itld nd:yourbvodin, readygsi usondaily.</div>lay: : : <ullor:ss=" { content: '→">lay: : : : <li>Ts,itld nd:yourbexginiacet: 900;
+nesstndb</li>lay: : : : <li>Geserao agasesek ofv lets4in m ruo a</li>lay: : : : <li>Psoduct ild custom s4in bulk4frnd a:spreadsheet</li>lay: : : : <li>Emailmsequencbsberitten nes s; fdul,1</li>lay: : : </ul>lay: : : <divlor:ss="epx; fon-sure">Frnd $450 · Delnam0,14in 4 days</div>lay: : </div>llay: : <divlor:ss="ecolor: var(">lay: : : <divlor:ss="12x; margin-">🔧</div>lay: : : <divlor:ss="epx; font-we"rC, and webTite</div>lay: : : <divlor:ss="epx; fon fon"rSnd;thnac specificbsi your4b/title>
+that doesn't;fit;avgap: 60p. Briaceus the -surface
+  :we' noscope the s--greeninessbationit.</div>lay: : : <ullor:ss=" { content: '→">lay: : : : <li>Pso le, vreseraoncifrnd clr(--iinputa</li>lay: : : : <li>It-sid, vknowl,1g emasonwith web earch</li>lay: : : : <li>Psurfaceur culaoncifncico '�xmid; grid</li>lay: : : : <li>Cxmpent-or mnat-oriacetite</li>lay: : : </ul>lay: : : <divlor:ss="epx; fon-sure">C, and quox; · Scoped4in 24ehbers</div>lay: : </div>llay: </div>lay</div>l</#ground17
+<hr17
+<!-- PROCESS --g: #ground:id="var(--b">7;
+<divlor:ss="px; margi">lay: <divlor:ss="12px; text-tr">How It Work></div>lay: <h2lor:ss="12px; tent-we">Frnd Ideabsi Lnam4in Days</>2>lay: <plor:ss="12px; tesub">ustdiscooldymc, n>
+that gos lphm0, justsix-esek nt-s: 56� jW- mnam4fastinessyou alwaysvknow what's hnppeniac.</p>lay: <divlor:ss="id; grid-temp">lay: : <divlor:ss=" al grid-tem">lay: : : <divlor:ss="1x; font-we">01</div>lay: : : <divlor:ss="e; font-we">Te noUs What You Nees</div>lay: : : <divlor:ss="e; fo fon"rFl noidththe shorthd:ho. Ded cube the -surfacein : 6in Englishe
+  :noxtechvknowl,1g erequired.</div>lay: : : <divlor:ss="e; fontwe"r⏱ 5 m ruo a</div>lay: : </div>lay: : <divlor:ss=" al grid-tem">lay: : : <divlor:ss="1x; font-we">02</div>lay: : : <divlor:ss="e; font-we">W- Scope & Quox;</div>lay: : : <divlor:ss="e; fo fon"rW erepny withna 24ehbersnwith alorearoscope, flaton:o e-sure,enessdelnam0y nt-s: 56 justsva-susts.</div>lay: : : <divlor:ss="e; fontwe"r⏱ Withna 24ehbers</div>lay: : </div>lay: : <divlor:ss=" al grid-tem">lay: : : <divlor:ss="1x; font-we">03</div>lay: : : <divlor:ss="e; font-we">W- </}
+  It</div>lay: : : <divlor:ss="e; fo fon"rYou get;daily upd:o � jW- bationfasti
+  :mnt; projgros ship4in urgbciasesek.</div>lay: : : <divlor:ss="e; fontwe"r⏱ 3–7 days typlc, </div>lay: : </div>lay: : <divlor:ss=" al grid-tem">lay: : : <divlor:ss="1x; font-we">04</div>lay: : : <divlor:ss="e; font-we">You Revice;& Launch</div>lay: : : <divlor:ss="e; fo fon"rW ehnesnitution, walk4you through it,enessmak erevisim s4untilmyou're satisfied. Then it go aglnam.</div>lay: : : <divlor:ss="e; fontwe"r⏱ 1–2 days</div>lay: : </div>l: : </div>l: </div>l</#ground17
+<hr17
+<!-- WHY --g: #ground:id="why">7;
+<divlor:ss="px; margi">lay: <divlor:ss="12px; text-tr">WhyoUs</div>lay: <h2lor:ss="12px; tent-we">We're ust;an Aresuy.<br>We Don't;Act Lik eOnm.</>2>lay: <divlor:ss="rid-temp">lay: : <divlor:ss="--surfac">lay: : : <divlor:ss=" margin-">💰</div>lay: : : <divlor:ss="; font-we"rFlatoR:o ePsurfac</div>lay: : : <divlor:ss="; fonsiz">N
+<hberny billfac justT  margis. You know the -sdingU { conwetstart nesnitudoesn't;phnegm.</div>lay: : </div>lay: : <divlor:ss="--surfac">lay: : : <divlor:ss=" margin-">⚡</div>lay: : : <divlor:ss="; font-we"rFastiTuid,er: 1</div>lay: : : <divlor:ss="; fonsiz">Mnt; projgros delnam04in urgbciasesek.jW- don't;pad nt-s: 56�bsi look4b/ty.</div>lay: : </div>lay: : <divlor:ss="--surfac">lay: : : <divlor:ss=" margin-">🎯</div>lay: : : <divlor:ss="; font-we"rBatitgsi Get;Uses</div>lay: : : <divlor:ss="; fonsiz">W- bationsitesithat fit;how you actu, ny worke
+  :notnsitesithat neesiasmanu, vsi open:o .</div>lay: : </div>lay: : <divlor:ss="--surfac">lay: : : <divlor:ss=" margin-">🔒</div>lay: : : <divlor:ss="; font-we"rustLock-Ib</div>lay: : : <divlor:ss="; fonsiz">You own eam0ythnac w- batio justpro-sd  mdymplatd:hos.">
+<depen esuybnd:u�bsi keepniturunniac.</div>lay: : </div>lay: : <divlor:ss="--surfac">lay: : : <divlor:ss=" margin-">📞</div>lay: : : <divlor:ss="; font-we"rDirect Cxmmunlc,ll b</div>lay: : : <divlor:ss="; fonsiz">You talk4directlygsi the -gison batioiacei  justaccr: t managgis.">
+<;
+  et;queuts.</div>lay: : </div>lay: : <divlor:ss="--surfac">lay: : : <divlor:ss=" margin-">✅</div>lay: : : <divlor:ss="; font-we"rSatisfaround:Guarat-s;</div>lay: : : <divlor:ss="; fonsiz">Ifei 's notngroun, w- fixei  jW- don't;invodingnessdisnppear.</div>lay: : </div>lay: </div>lay</div>l</#ground17
+<hr17
+<!-- PRICING --g: #ground:id="vaurfac">7;
+<divlor:ss="px; margi">lay: <divlor:ss="12px; text-tr">Si '�ePsurfac</div>lay: <h2lor:ss="12px; tent-we">Choosona StartiacePero-</>2>lay: <plor:ss="12px; tesub">A nopackaggs aretstartiace-sdins. Co '�xmprojgros aretscoped4individu, ny 
+  :alwaysvupfrx; ,:alwaysvflaton:o .</p>lay: <divlor:ss="id grid-temp">llay: : <divlor:ss="re { content">lay: : : <divlor:ss=" a { contiwe">Starter</div>lay: : : <divlor:ss="var(--bgaddin">$350 <}
+  >oneontwept#
+  ></div>lay: : : <divlor:ss="var(--bg fon"rOn enr small b nciin ees, nowebsite. Perfectgencieolvitg a specificbnt-wdhero-nfast.</div>lay: : : <ullor:ss="ghr(--bg 'MOST s">lay: : : : <li><}
+  .or:ss=" 'MO); fon">✓pt#
+  > Sitg bdwork-boxenr small b</li>lay: : : : <li><}
+  .or:ss=" 'MO); fon">✓pt#
+  > Upgsi 3 comaxctesiapps</li>lay: : : : <li><}
+  .or:ss=" 'MO); fon">✓pt#
+  > Delnam0,14in 3 days</li>lay: : : : <li><}
+  .or:ss=" 'MO); fon">✓pt#
+  > 14-day sup-wid box; mdelnam0y</li>lay: : : </ul>lay: : : <a href="#cx; mct"lor:ss="re { cont); out-ion">Get;avQuox;</a>7;
+ay: </div>llay: : <divlor:ss="re { content  'MOST P">lay: : : <divlor:ss=" a { contiwe">Growth</div>lay: : : <divlor:ss="var(--bgaddin">$800 <}
+  >oneontwept#
+  ></div>lay: : : <divlor:ss="var(--bg fon"rFul vws. No enciasco '�o eweb 'Segoe
+  :chat {  for small b,enessdashbo; boco bitld.</div>lay: : : <ullor:ss="ghr(--bg 'MOST s">lay: : : : <li><}
+  .or:ss=" 'MO); fon">✓pt#
+  > Ful vws. No eORsco '�o eweb 'Sego</li>lay: : : : <li><}
+  .or:ss=" 'MO); fon">✓pt#
+  > Unlnmitesirevisim s4untilmapprtiod</li>lay: : : : <li><}
+  .or:ss=" 'MO); fon">✓pt#
+  > Delnam0,14in 7 days</li>lay: : : : <li><}
+  .or:ss=" 'MO); fon">✓pt#
+  > 30-day sup-wid box; mdelnam0y</li>lay: : : : <li><}
+  .or:ss=" 'MO); fon">✓pt#
+  > Setup walkthrough c, n</li>lay: : : </ul>lay: : : <a href="#cx; mct"lor:ss="re { cont); r(--">Get;avQuox;</a>7;
+ay: </div>llay: : <divlor:ss="re { content">lay: : : <divlor:ss=" a { contiwe">Sur B</div>lay: : : <divlor:ss="var(--bgaddin">C, and <}
+  >quox;</#
+  ></div>lay: : : <divlor:ss="var(--bg fon"rMulti'�e 'Segos."ongonacebatios,enciasco '�xns, and sitesthat neesagasfu noscope px;oldsall b.</div>lay: : : <ullor:ss="ghr(--bg 'MOST s">lay: : : : <li><}
+  .or:ss=" 'MO); fon">✓pt#
+  > Eam0ythnac in Growth</li>lay: : : : <li><}
+  .or:ss=" 'MO); fon">✓pt#
+  > Multi, 'Segomprojgros</li>lay: : : : <li><}
+  .or:ss=" 'MO); fon">✓pt#
+  > Psuority4tuid,er: 1</li>lay: : : : <li><}
+  .or:ss=" 'MO); fon">✓pt#
+  > 60-day sup-wid -giio1</li>lay: : : : <li><}
+  .or:ss=" 'MO); fon">✓pt#
+  > Mnathny ; fon-in c, n</li>lay: : : </ul>lay: : : <a href="#cx; mct"lor:ss="re { cont); out-ion">Le 's Talk</a>7;
+ay: </div>llay: </div>lay</div>l</#ground17
+<hr17
+<!-- CONTACT --g: #ground:id="cx; mct">7;
+<divlor:ss="px; margi">lay: <divlor:ss="cx; mct; max-">lay: : <divlor:ss="cx; mct; mfo">lay: : : <divlor:ss="12px; text-tr">Get;in Touch</div>lay: : : <h3>Te noUs mbersem { ba.<br>We' no</tionshe Fix.</>3>lay: : : <prustsa bsipitch.">
+<discooldymc, nerequired. Joot te nous what's 'MOnac yourbst-sincipxstnac youimnavy nesses' noco e; bornwith alscope nessprdingwithna 24ehbers.</p>lay: : : <ullor:ss="cx; mct;r(-ts">lay: : : : <lilor:ss="cx; mct;r(-t">lay: : : : : <divlor:ss=" mct; in-"r⏱</div>lay: : : : : <divlor:ss=" mct;nsiz"><stroac>Respoese nt-s</#0roac>Withna 24ehbers,ousu, ny s-weiday</div>lay: : : : </li>lay: : : : <lilor:ss="cx; mct;r(-t">lay: : : : : <divlor:ss=" mct; in-"r💬</div>lay: : : : : <divlor:ss=" mct;nsiz"><stroac>ustco mitmeo-</stroac>A quox; isvfree. You decid; if youiwant.2stproceld.</div>lay: : : : </li>lay: : : : <lilor:ss="cx; mct;r(-t">lay: : : : : <divlor:ss=" mct; in-"r🔒</div>lay: : : : : <divlor:ss=" mct;nsiz"><stroac>Your4infotstaysvprdvats</#0roac>We neam04sharetnciee noyourbd  maes.</div>lay: : : : </li>lay: : : : <lilor:ss="cx; mct;r(-t">lay: : : : : <divlor:ss=" mct; in-"r📧</div>lay: : : : : <divlor:ss=" mct;nsiz"><stroac>Emailmus directly</#0roac>adrian.dj { p@gmail.co </div>lay: : : : </li>lay: : : </ul>lay: : </div>llay: : <divlor:ss="cx; mct;d:ho">lay: : : <h3l#0d11="t: 1.6; mab fonttom: 8px; }  .stn-gold { back}0lu">Get;avFnt- Quox;</>3>lay: : : <d:hov"We buai-id; grid"ld;thod="POST"vdata-net-ify="true" net-ify-hnavypot=" { -fie--":id="cx; mctF:ho">lay: : : : <input typ bubefore"v"We bud:ho-t-we" valu buai-id; grid">lay: : : : <input typ bubefore"v"We bu { -fie--":#0d11="lex-wrap.nav">lay: : : : <divlor:ss=" :ho-row">lay: : : : : <divlor:ss=" :ho-der:p">lay: : : : : : <lt-tr>First Na-s</lt-tr>lay: : : : : : <input typ bunsiz"v"We budirstN-we" : 6ceholgbc="Johe"vrequired>lay: : : : : </div>lay: : : : : <divlor:ss=" :ho-der:p">lay: : : : : : <lt-tr>Last Na-s</lt-tr>lay: : : : : : <input typ bunsiz"v"We bur:stN-we" : 6ceholgbc="Smith">lay: : : : : </div>lay: : : : </div>lay: : : : <divlor:ss=" :ho-der:p">lay: : : : : <lt-tr>Email</lt-tr>lay: : : : : <input typ buemail"v"We buemail"v: 6ceholgbc="you@yourb/title>.co "vrequired>lay: : : : </div>lay: : : : <divlor:ss=" :ho-der:p">lay: : : : : <lt-tr></title>
+Typ </lt-tr>lay: : : : : <selectv"We bu /title>Typ ">lay: : : : : : <ostom  valu bu">Stlxcthyourbsyp ...</ostom >lay: : : : : : <ostom >E-co mering/ Onter; Store</ostom >lay: : : : : : <ostom >Loc, backgrouo</title></ostom >lay: : : : : : <ostom >Psofessgnd, vackground(lawyon, accr: ta; ,:etc.)</ostom >lay: : : : : : <ostom >Restaurat-g/ Hospitality</ostom >lay: : : : : : <ostom >Fittle>
+/ Health</ostom >lay: : : : : : <ostom >Re, vEstate</ostom >lay: : : : : : <ostom >C: 900; Creaonci/vFnt-lancer</ostom >lay: : : : : : <ostom >Osher</ostom >lay: : : : : </#glxct>lay: : : : </div>lay: : : : <divlor:ss=" :ho-der:p">lay: : : : : <lt-tr>What do youineesihelpgwith?</lt-tr>lay: : : : : <selectv"We buid; gri">lay: : : : : : <ostom  valu bu">Stlxcthamid; gri...</ostom >lay: : : : : : <ostom >iveC, and; mChat { </ostom >lay: : : : : : <ostom ></title>
+Ar small b</ostom >lay: : : : : : <ostom >H; }-Cx;oldtitg Ws. No </ostom >lay: : : : : : <ostom ></title>
+Dashbo; b</ostom >lay: : : : : : <ostom >iveC: 900; Engia </ostom >lay: : : : : : <ostom >C, and webTite</ostom >lay: : : : : : <ostom >ust;sST e
+  :I havona -surfacesi solv </ostom >lay: : : : : </#glxct>lay: : : : </div>lay: : : : <divlor:ss=" :ho-der:p">lay: : : : : <lt-tr>Ded cube yourbsituall b <}
+  .#0d11="t: 1. 8px; }40.1ize: 1px; line-hei">(she m cond  mae,:the bvar(- yourbquox;)</#
+  ></lt-tr>lay: : : : : <bordareas"We bumle>age" : 6ceholgbc="What's 'MOnac yourbst-s? What's pxstnac youimnavy? What wzu
+  mak eyour4b/title>
+runund: vaer?"vrequired></bordarea>lay: : : : </div>lay: : : : <bu ban typ busubmi;"lor:ss=" :ho-submi;">Stess
+  :Get;MyvFnt- Quox; →</bu ban>lay: : : </ :ho>lay: : : <divlor:ss="1uc(--bgbamax-":id="1uc(--bBamax-">✓vacnt! We' noget; bornsi you withna 24ehbers.</div>lay: : </div>lay: </div>lay</div>l</#ground17
+<foox; >7;
+<divlor:ss="d:ox; -I', x">lay: <a href="/">Tn: naceTites</a>7;
+: <a href="https://d nambyont-weu.gumroad.co /l/po  et-dayer-slabermanu, ">Tn: naceManu, </a>7;
+: <a href="#id; grid">webackgroun</a>7;
+: <a href="#cx; mct">Cx; mct</a>7;
+</div>l: <pr© 2026ta name="descri · web ekgroundenci fluff —ethat want.{
+    -.">
+tiexcusts.</p>l</ :ox; >7
+<d cust>
+documeo-.getEfaceo-ById('cx; mctF:ho').addEr { Listeser('submi;', funround(e)splaycx;st;sSc(--b = documeo-.getEfaceo-ById('1uc(--bBamax-'dilayif (window.loc,ll b vartoize === 'file:' || window.loc,ll b var(t-wei=== 'loc,lvar(')splay: e vaer { Defa   (dilay: thns.#0d11.lex-wra = '.nav'ilay: 1uc(--b.#0d11.lex-wra = 'block'ilay} elsesplay: e vaer { Defa   (dilay: fetch('/', {ld;thod: 'POST', ); c:ineweByNmData(thns) })lay: : .vaen(() => {lthns.#0d11.lex-wra = '.nav'i 1uc(--b.#0d11.lex-wra = 'block'i })lay: : .c,lch(() => {lthns.#0d11.lex-wra = '.nav'i 1uc(--b.#0d11.lex-wra = 'block'i }): abso}): </# cust>
+ </); c>
+</>>
+<me
