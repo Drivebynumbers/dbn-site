@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Position Size Calculator — DriveByNumbers</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1c2330;
+      --border: #30363d;
+      --gold: #c8952a;
+      --gold-light: #e0a832;
+      --teal: #2e8b7a;
+      --teal-light: #3aad98;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --danger: #e05252;
+      --success: #3fb950;
+      --radius: 10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .brand-icon {
+      width: 36px; height: 36px; background: var(--gold);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 14px; color: #000; letter-spacing: -1px;
+    }
+    .brand-name { font-size: 15px; font-weight: 700; color: var(--text); }
+    .brand-sub { font-size: 11px; color: var(--muted); }
+    .header-cta {
+      background: var(--gold); color: #000; font-weight: 700;
+      border: none; border-radius: 7px; padding: 9px 18px;
+      font-size: 13px; cursor: pointer; text-decoration: none;
+      transition: background .2s;
+    }
+    .header-cta:hover { background: var(--gold-light); }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(160deg, #0d1117 0%, #111820 60%, #0d1117 100%);
+      text-align: center; padding: 52px 24px 40px;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-badge {
+      display: inline-block; background: rgba(200,149,42,.15);
+      border: 1px solid rgba(200,149,42,.3); color: var(--gold);
+      font-size: 11px; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; padding: 5px 12px; border-radius: 20px; margin-bottom: 18px;
+    }
+    .hero h1 { font-size: clamp(24px, 5vw, 38px); font-weight: 800; line-height: 1.2; margin-bottom: 12px; }
+    .hero h1 span { color: var(--gold); }
+    .hero p { font-size: 15px; color: var(--muted); max-width: 480px; margin: 0 auto; line-height: 1.6; }
+
+    /* MAIN LAYOUT */
+    main {
+      flex: 1; max-width: 900px; margin: 0 auto; width: 100%;
+      padding: 32px 16px 48px;
+    }
+
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 620px) { .grid { grid-template-columns: 1fr; } }
+
+    /* CARDS */
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px;
+    }
+    .card-title {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .8px; color: var(--muted); margin-bottom: 18px;
+    }
+
+    /* INPUTS */
+    .field { margin-bottom: 16px; }
+    .field label {
+      display: block; font-size: 13px; color: var(--muted);
+      margin-bottom: 6px; font-weight: 500;
+    }
+    .field label span { color: var(--gold); font-size: 11px; margin-left: 4px; }
+    .input-wrap { position: relative; }
+    .input-wrap .prefix, .input-wrap .suffix {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      color: var(--muted); font-size: 13px; font-weight: 600; pointer-events: none;
+    }
+    .input-wrap .prefix { left: 12px; }
+    .input-wrap .suffix { right: 12px; }
+    input[type="number"], select {
+      width: 100%; background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text); font-size: 15px; font-weight: 600;
+      padding: 11px 14px; border-radius: 7px; outline: none;
+      transition: border-color .2s;
+      -moz-appearance: textfield;
+    }
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    input[type="number"]:focus, select:focus { border-color: var(--gold); }
+    .has-prefix input { padding-left: 28px; }
+    .has-suffix input { padding-right: 36px; }
+
+    /* TABS */
+    .tabs { display: flex; gap: 4px; background: var(--surface2); border-radius: 8px; padding: 4px; margin-bottom: 20px; }
+    .tab {
+      flex: 1; text-align: center; padding: 8px 12px; font-size: 12px;
+      font-weight: 700; border-radius: 6px; cursor: pointer;
+      border: none; background: none; color: var(--muted); transition: all .2s;
+    }
+    .tab.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,.4); }
+
+    /* RESULTS */
+    .results-card {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden; grid-column: span 2;
+    }
+    @media (max-width: 620px) { .results-card { grid-column: span 1; } }
+
+    .results-header {
+      background: linear-gradient(90deg, rgba(200,149,42,.12) 0%, transparent 100%);
+      border-bottom: 1px solid var(--border); padding: 14px 20px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .results-header h3 { font-size: 13px; font-weight: 700; color: var(--gold); }
+
+    .results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+    .result-item {
+      padding: 20px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    }
+    .result-item:last-child { border-right: none; }
+    .result-label { font-size: 11px; text-transform: uppercase; letter-spacing: .7px; color: var(--muted); margin-bottom: 6px; }
+    .result-value { font-size: 22px; font-weight: 800; color: var(--text); line-height: 1; }
+    .result-value.gold { color: var(--gold); }
+    .result-value.danger { color: var(--danger); }
+    .result-value.success { color: var(--success); }
+    .result-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* RISK BAR */
+    .risk-bar-wrap { grid-column: span 2; padding: 16px 20px 20px; border-top: 1px solid var(--border); }
+    @media (max-width: 620px) { .risk-bar-wrap { grid-column: span 1; } }
+    .risk-bar-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .7px; margin-bottom: 8px; }
+    .risk-bar-track { background: var(--border); border-radius: 99px; height: 8px; overflow: hidden; }
+    .risk-bar-fill { height: 100%; border-radius: 99px; transition: width .4s ease, background .4s; }
+    .risk-legend { display: flex; gap: 16px; margin-top: 8px; font-size: 11px; color: var(--muted); }
+    .risk-legend span { display: flex; align-items: center; gap: 5px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    /* DISCLAIMER */
+    .disclaimer {
+      text-align: center; font-size: 11px; color: var(--muted);
+      padding: 16px; border-top: 1px solid var(--border);
+      line-height: 1.6;
+    }
+
+    /* CTA STRIP */
+    .cta-strip {
+      background: linear-gradient(90deg, rgba(200,149,42,.08) 0%, rgba(46,139,122,.08) 100%);
+      border: 1px solid rgba(200,149,42,.2); border-radius: var(--radius);
+      padding: 20px 24px; display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; flex-wrap: wrap; margin-top: 24px;
+    }
+    .cta-strip-text h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .cta-strip-text p { font-size: 13px; color: var(--muted); }
+    .cta-btn {
+      background: var(--gold); color: #000; font-weight: 800; font-size: 13px;
+      padding: 12px 22px; border-radius: 8px; border: none; cursor: pointer;
+      white-space: nowrap; text-decoration: none; transition: background .2s;
+    }
+    .cta-btn:hover { background: var(--gold-light); }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="brand" href="#">
+    <div class="brand-icon">DBN</div>
+    <div>
+      <div class="brand-name">DriveByNumbers</div>
+      <div class="brand-sub">Institutional Trading Tools</div>
+    </div>
+  </a>
+  <a class="header-cta" href="https://drivebynumbers.gumroad.com/l/pocket-day-trading-manual" target="_blank">Get the Manual — $37</a>
+</header>
+
+<div class="hero">
+  <div class="hero-badge">Free Tool</div>
+  <h1>Position Size <span>Calculator</span></h1>
+  <p>Know exactly how many units to trade before you enter. Protect your capital. Trade like an institution.</p>
+</div>
+
+<main>
+  <div class="grid">
+
+    <!-- LEFT: ACCOUNT -->
+    <div class="card">
+      <div class="card-title">Account Settings</div>
+
+      <div class="field">
+        <label>Account Balance <span id="balanceCurrencyLabel">(USD)</span></label>
+        <div class="input-wrap has-prefix">
+          <span class="prefix" id="currencyPrefix">$</span>
+          <input type="number" id="balance" value="10000" min="1" step="100">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Risk Per Trade <span>(%)</span></label>
+        <div class="input-wrap has-suffix">
+          <input type="number" id="riskPct" value="1" min="0.1" max="10" step="0.1">
+          <span class="suffix">%</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Account Currency</label>
+        <select id="currency" onchange="updateCurrencySymbol()">
+          <optgroup label="Most Common">
+            <option value="USD">USD — US Dollar</option>
+            <option value="EUR">EUR — Euro</option>
+            <option value="GBP">GBP — British Pound</option>
+            <option value="AUD">AUD — Australian Dollar</option>
+            <option value="CAD">CAD — Canadian Dollar</option>
+          </optgroup>
+          <optgroup label="Asia / Pacific">
+            <option value="JPY">JPY — Japanese Yen</option>
+            <option value="NZD">NZD — New Zealand Dollar</option>
+            <option value="SGD">SGD — Singapore Dollar</option>
+            <option value="HKD">HKD — Hong Kong Dollar</option>
+            <option value="CNY">CNY — Chinese Yuan</option>
+            <option value="INR">INR — Indian Rupee</option>
+            <option value="KRW">KRW — South Korean Won</option>
+          </optgroup>
+          <optgroup label="Europe">
+            <option value="CHF">CHF — Swiss Franc</option>
+            <option value="SEK">SEK — Swedish Krona</option>
+            <option value="NOK">NOK — Norwegian Krone</option>
+            <option value="DKK">DKK — Danish Krone</option>
+            <option value="PLN">PLN — Polish Zloty</option>
+            <option value="CZK">CZK — Czech Koruna</option>
+            <option value="HUF">HUF — Hungarian Forint</option>
+            <option value="RON">RON — Romanian Leu</option>
+          </optgroup>
+          <optgroup label="Middle East / Africa">
+            <option value="AED">AED — UAE Dirham</option>
+            <option value="SAR">SAR — Saudi Riyal</option>
+            <option value="ZAR">ZAR — South African Rand</option>
+            <option value="TRY">TRY — Turkish Lira</option>
+            <option value="ILS">ILS — Israeli Shekel</option>
+          </optgroup>
+          <optgroup label="Americas">
+            <option value="BRL">BRL — Brazilian Real</option>
+            <option value="MXN">MXN — Mexican Peso</option>
+            <option value="CLP">CLP — Chilean Peso</option>
+            <option value="COP">COP — Colombian Peso</option>
+            <option value="ARS">ARS — Argentine Peso</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+
+    <!-- RIGHT: TRADE -->
+    <div class="card">
+      <div class="card-title">Trade Details</div>
+
+      <div class="tabs" role="tablist">
+        <button class="tab active" onclick="setMode('pips')" id="tab-pips">Pips Stop</button>
+        <button class="tab" onclick="setMode('price')" id="tab-price">Price Stop</button>
+      </div>
+
+      <div id="mode-pips">
+        <div class="field">
+          <label>Instrument</label>
+          <select id="instrument" onchange="calc()">
+            <optgroup label="⭐ Most Popular">
+              <option value="XAUUSD">XAU/USD (Gold)</option>
+              <option value="EURUSD">EUR/USD</option>
+              <option value="GBPUSD">GBP/USD</option>
+              <option value="BTCUSD">BTC/USD (Bitcoin)</option>
+              <option value="ETHUSD">ETH/USD (Ethereum)</option>
+            </optgroup>
+            <optgroup label="💱 Forex Majors">
+              <option value="EURUSD">EUR/USD</option>
+              <option value="GBPUSD">GBP/USD</option>
+              <option value="AUDUSD">AUD/USD</option>
+              <option value="NZDUSD">NZD/USD</option>
+              <option value="USDJPY">USD/JPY</option>
+              <option value="USDCHF">USD/CHF</option>
+              <option value="USDCAD">USD/CAD</option>
+            </optgroup>
+            <optgroup label="🔀 Yen Crosses">
+              <option value="GBPJPY">GBP/JPY</option>
+              <option value="EURJPY">EUR/JPY</option>
+              <option value="AUDJPY">AUD/JPY</option>
+              <option value="NZDJPY">NZD/JPY</option>
+              <option value="CADJPY">CAD/JPY</option>
+              <option value="CHFJPY">CHF/JPY</option>
+            </optgroup>
+            <optgroup label="🔀 Other Crosses">
+              <option value="EURGBP">EUR/GBP</option>
+              <option value="EURAUD">EUR/AUD</option>
+              <option value="EURCAD">EUR/CAD</option>
+              <option value="GBPAUD">GBP/AUD</option>
+              <option value="GBPCAD">GBP/CAD</option>
+              <option value="AUDCAD">AUD/CAD</option>
+              <option value="AUDNZD">AUD/NZD</option>
+            </optgroup>
+            <optgroup label="🥇 Metals">
+              <option value="XAUUSD">XAU/USD (Gold)</option>
+              <option value="XAGUSD">XAG/USD (Silver)</option>
+              <option value="XPTUSD">XPT/USD (Platinum)</option>
+            </optgroup>
+            <optgroup label="📈 Indices (CFD)">
+              <option value="US30">US30 (Dow Jones)</option>
+              <option value="US100">US100 (NASDAQ)</option>
+              <option value="SPX500">SPX500 (S&amp;P 500)</option>
+              <option value="DE40">DE40 (DAX)</option>
+              <option value="UK100">UK100 (FTSE 100)</option>
+            </optgroup>
+            <optgroup label="🛢 Commodities">
+              <option value="USOIL">WTI Oil (USOIL)</option>
+              <option value="UKOIL">Brent Oil (UKOIL)</option>
+            </optgroup>
+            <optgroup label="📱 Stocks (CFD, 100 shares/lot)">
+              <option value="AAPL">AAPL (Apple)</option>
+              <option value="TSLA">TSLA (Tesla)</option>
+              <option value="NVDA">NVDA (NVIDIA)</option>
+              <option value="MSFT">MSFT (Microsoft)</option>
+              <option value="AMZN">AMZN (Amazon)</option>
+              <option value="GOOGL">GOOGL (Alphabet)</option>
+              <option value="META">META (Meta)</option>
+            </optgroup>
+            <optgroup label="🪙 Crypto (CFD)">
+              <option value="BTCUSD">BTC/USD (Bitcoin)</option>
+              <option value="ETHUSD">ETH/USD (Ethereum)</option>
+              <option value="SOLUSD">SOL/USD (Solana)</option>
+              <option value="XRPUSD">XRP/USD (Ripple)</option>
+              <option value="BNBUSD">BNB/USD (Binance Coin)</option>
+              <option value="DOGEUSD">DOGE/USD (Dogecoin)</option>
+            </optgroup>
+          </select>
+          <div id="brokerNote" style="margin-top:6px;font-size:11px;color:var(--gold);display:none;line-height:1.4;padding:6px 8px;background:rgba(200,149,42,0.08);border-radius:5px;border:1px solid rgba(200,149,42,0.2)"></div>
+        </div>
+        <div class="field">
+          <label>Leverage <span>(optional)</span></label>
+          <select id="leverage" onchange="calc()">
+            <option value="0">No leverage / not applicable</option>
+            <option value="10">10:1</option>
+            <option value="20">20:1</option>
+            <option value="30">30:1</option>
+            <option value="50">50:1</option>
+            <option value="100">100:1</option>
+            <option value="200">200:1</option>
+            <option value="300">300:1</option>
+            <option value="400">400:1</option>
+            <option value="500">500:1</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Stop Loss <span>(pips)</span></label>
+          <input type="number" id="slPips" value="20" min="1" step="1" oninput="calc()">
+        </div>
+      </div>
+
+      <div id="mode-price" style="display:none">
+        <div class="field">
+          <label>Entry Price</label>
+          <input type="number" id="entryPrice" value="2000" step="0.01" oninput="calc()">
+        </div>
+        <div class="field">
+          <label>Stop Loss Price</label>
+          <input type="number" id="slPrice" value="1990" step="0.01" oninput="calc()">
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results-card">
+      <div class="results-header">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <h3>Calculated Position</h3>
+      </div>
+      <div class="results-grid">
+        <div class="result-item">
+          <div class="result-label">Risk Amount</div>
+          <div class="result-value gold" id="riskAmt">$100.00</div>
+          <div class="result-sub" id="riskPctDisplay">1% of account</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Lot Size</div>
+          <div class="result-value" id="lotSize">0.05</div>
+          <div class="result-sub" id="lotType">Standard lots</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Units</div>
+          <div class="result-value" id="units">5,000</div>
+          <div class="result-sub">Trade units</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Pip Value</div>
+          <div class="result-value" id="pipValue">$0.50</div>
+          <div class="result-sub">Per pip</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Stop Distance</div>
+          <div class="result-value" id="stopDisplay">20 pips</div>
+          <div class="result-sub" id="stopPoints">200 points</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">R:R Needed for 2R</div>
+          <div class="result-value success" id="targetLevel">+40 pips</div>
+          <div class="result-sub">2:1 target</div>
+        </div>
+        <div class="result-item" id="marginRow" style="display:none">
+          <div class="result-label">Margin Required</div>
+          <div class="result-value" id="marginRequired">—</div>
+          <div class="result-sub" id="marginSub">at selected leverage</div>
+        </div>
+      </div>
+      <div class="risk-bar-wrap">
+        <div class="risk-bar-label">Risk Level</div>
+        <div class="risk-bar-track">
+          <div class="risk-bar-fill" id="riskBar" style="width:10%; background: var(--success);"></div>
+        </div>
+        <div class="risk-legend">
+          <span><div class="dot" style="background:var(--success)"></div>0–1% Safe</span>
+          <span><div class="dot" style="background:var(--gold)"></div>1–2% Moderate</span>
+          <span><div class="dot" style="background:var(--danger)"></div>2%+ High Risk</span>
+        </div>
+      </div>
+      <div class="disclaimer">This calculator is for educational purposes only. Always use a broker demo account to verify position sizing before live trading.</div>
+    </div>
+
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-strip">
+    <div class="cta-strip-text">
+      <h4>Want the full institutional framework?</h4>
+      <p>The Pocket Day Trading Manual covers order flow, liquidity, structure, 5 proven strategies + full risk management.</p>
+    </div>
+    <a class="cta-btn" href="https://drivebynumbers.gumroad.com/l/pocket-day-trading-manual" target="_blank">Get the Manual — $37 →</a>
+    <a class="cta-btn" href="https://drivebynumbers.netlify.app/mt4-analyzer" target="_blank" style="background:var(--teal);color:#fff;margin-top:10px;display:inline-block">Analyze Your MT4 History — Free →</a>
+  </div>
+</main>
+
+<script>
+  // Pip values per standard lot in USD (approximate — verify with your broker)
+  const PIP_VALUES = {
+    // Forex Majors
+    EURUSD: 10, GBPUSD: 10, AUDUSD: 10, NZDUSD: 10,
+    USDJPY: 9.1, USDCHF: 10, USDCAD: 7.6,
+    // Yen Crosses
+    GBPJPY: 9.1, EURJPY: 9.1, AUDJPY: 9.1,
+    NZDJPY: 9.1, CADJPY: 9.1, CHFJPY: 9.1,
+    // Other Crosses
+    EURGBP: 13, EURAUD: 6.5, EURCAD: 7.6,
+    GBPAUD: 6.5, GBPCAD: 7.6, AUDCAD: 7.6, AUDNZD: 6.5,
+    // Metals
+    XAUUSD: 10,   // Gold: $10/pip/lot
+    XAGUSD: 50,   // Silver: $50/pip/lot
+    XPTUSD: 10,   // Platinum: $10/pip/lot
+    // Indices (per point/contract)
+    US30: 1, US100: 1, SPX500: 1, DE40: 1, UK100: 0.8,
+    // Commodities
+    USOIL: 10, UKOIL: 10,
+    // Stocks — CFD (100 shares per lot, pip = $0.01, so $1/pip/lot)
+    AAPL: 1, TSLA: 1, NVDA: 1, MSFT: 1, AMZN: 1, GOOGL: 1, META: 1,
+    // Crypto CFD
+    BTCUSD: 1,    // 1 lot = 1 BTC, 1 pip = $1
+    ETHUSD: 0.1,  // 1 lot = 1 ETH, 1 pip = $0.1
+    SOLUSD: 0.01, XRPUSD: 0.001, BNBUSD: 0.1, DOGEUSD: 0.001,
+  };
+
+  const PIP_SIZE = {
+    // Forex Majors
+    EURUSD: 0.0001, GBPUSD: 0.0001, AUDUSD: 0.0001, NZDUSD: 0.0001,
+    USDJPY: 0.01, USDCHF: 0.0001, USDCAD: 0.0001,
+    // Yen Crosses
+    GBPJPY: 0.01, EURJPY: 0.01, AUDJPY: 0.01,
+    NZDJPY: 0.01, CADJPY: 0.01, CHFJPY: 0.01,
+    // Other Crosses
+    EURGBP: 0.0001, EURAUD: 0.0001, EURCAD: 0.0001,
+    GBPAUD: 0.0001, GBPCAD: 0.0001, AUDCAD: 0.0001, AUDNZD: 0.0001,
+    // Metals
+    XAUUSD: 0.10, XAGUSD: 0.01, XPTUSD: 0.10,
+    // Indices
+    US30: 1, US100: 1, SPX500: 0.1, DE40: 1, UK100: 1,
+    // Commodities
+    USOIL: 0.01, UKOIL: 0.01,
+    // Stocks
+    AAPL: 0.01, TSLA: 0.01, NVDA: 0.01, MSFT: 0.01, AMZN: 0.01, GOOGL: 0.01, META: 0.01,
+    // Crypto
+    BTCUSD: 1, ETHUSD: 0.1, SOLUSD: 0.01, XRPUSD: 0.001, BNBUSD: 0.1, DOGEUSD: 0.001,
+  };
+
+  // Broker note for non-forex instruments
+  const BROKER_NOTE = {
+    XAGUSD: 'Silver pip values vary by broker (5000 oz/lot typical)',
+    US30: 'Index pip values vary — verify contract specs with your broker',
+    US100: 'Index pip values vary — verify contract specs with your broker',
+    SPX500: 'Index pip values vary — verify contract specs with your broker',
+    DE40: 'Index pip values vary — verify contract specs with your broker',
+    UK100: 'Index pip values vary — verify contract specs with your broker',
+    AAPL: 'Stock CFD: assumes 100 shares/lot. Verify with your broker.',
+    TSLA: 'Stock CFD: assumes 100 shares/lot. Verify with your broker.',
+    NVDA: 'Stock CFD: assumes 100 shares/lot. Verify with your broker.',
+    MSFT: 'Stock CFD: assumes 100 shares/lot. Verify with your broker.',
+    AMZN: 'Stock CFD: assumes 100 shares/lot. Verify with your broker.',
+    GOOGL: 'Stock CFD: assumes 100 shares/lot. Verify with your broker.',
+    META: 'Stock CFD: assumes 100 shares/lot. Verify with your broker.',
+    BTCUSD: 'Crypto CFD: pip values vary significantly by broker. Always verify.',
+    ETHUSD: 'Crypto CFD: pip values vary significantly by broker. Always verify.',
+    SOLUSD: 'Crypto CFD: pip values vary significantly by broker. Always verify.',
+    XRPUSD: 'Crypto CFD: pip values vary significantly by broker. Always verify.',
+    BNBUSD: 'Crypto CFD: pip values vary significantly by broker. Always verify.',
+    DOGEUSD: 'Crypto CFD: pip values vary significantly by broker. Always verify.',
+  };
+
+  // Currency symbol map
+  const CURRENCY_SYMBOLS = {
+    USD:'$', EUR:'€', GBP:'£', AUD:'A$', CAD:'C$', JPY:'¥', NZD:'NZ$',
+    SGD:'S$', HKD:'HK$', CNY:'¥', INR:'₹', KRW:'₩', CHF:'Fr',
+    SEK:'kr', NOK:'kr', DKK:'kr', PLN:'zł', CZK:'Kč', HUF:'Ft',
+    RON:'lei', AED:'د.إ', SAR:'﷼', ZAR:'R', TRY:'₺', ILS:'₪',
+    BRL:'R$', MXN:'$', CLP:'$', COP:'$', ARS:'$',
+  };
+
+  function updateCurrencySymbol() {
+    const cur = document.getElementById('currency').value;
+    const sym = CURRENCY_SYMBOLS[cur] || cur;
+    document.getElementById('currencyPrefix').textContent = sym;
+    document.getElementById('balanceCurrencyLabel').textContent = '(' + cur + ')';
+    calc();
+  }
+
+  let currentMode = 'pips';
+
+  function setMode(m) {
+    currentMode = m;
+    document.getElementById('mode-pips').style.display = m === 'pips' ? '' : 'none';
+    document.getElementById('mode-price').style.display = m === 'price' ? '' : 'none';
+    document.getElementById('tab-pips').classList.toggle('active', m === 'pips');
+    document.getElementById('tab-price').classList.toggle('active', m === 'price');
+    calc();
+  }
+
+  function fmt(n, dp = 2) {
+    if (isNaN(n) || !isFinite(n)) return '—';
+    return n.toLocaleString('en-US', { minimumFractionDigits: dp, maximumFractionDigits: dp });
+  }
+
+  function calc() {
+    const balance = parseFloat(document.getElementById('balance').value) || 0;
+    const riskPct = parseFloat(document.getElementById('riskPct').value) || 0;
+    const riskAmt = balance * riskPct / 100;
+
+    const instrument = document.getElementById('instrument').value;
+    const pipVal = PIP_VALUES[instrument] || 10;
+    const pipSize = PIP_SIZE[instrument] || 0.0001;
+    const leverage = parseInt(document.getElementById('leverage').value) || 0;
+
+    // Show/hide broker note
+    const noteEl = document.getElementById('brokerNote');
+    const note = BROKER_NOTE[instrument];
+    if (note) { noteEl.textContent = '⚠️ ' + note; noteEl.style.display = 'block'; }
+    else { noteEl.style.display = 'none'; }
+
+    let slPips = 0;
+    if (currentMode === 'pips') {
+      slPips = parseFloat(document.getElementById('slPips').value) || 0;
+    } else {
+      const entry = parseFloat(document.getElementById('entryPrice').value) || 0;
+      const sl    = parseFloat(document.getElementById('slPrice').value) || 0;
+      slPips = Math.abs(entry - sl) / pipSize;
+    }
+
+    if (slPips <= 0 || riskAmt <= 0) return;
+
+    // Lot size = Risk Amount / (Stop Pips × Pip Value per lot)
+    const lots = riskAmt / (slPips * pipVal);
+    const units = lots * 100000;
+
+    // Pip value for this specific lot size
+    const pipValueForLot = lots * pipVal;
+
+    // 2R target
+    const target2R = slPips * 2;
+
+    // Margin required (if leverage set)
+    const marginRow = document.getElementById('marginRow');
+    if (leverage > 0) {
+      // Margin = (Lot size × 100,000 × current price approximation) / leverage
+      // Simplified: use notional value based on typical prices
+      const notionalPerLot = { XAUUSD: 200000, BTCUSD: 80000, ETHUSD: 3000,
+        US30: 40000, US100: 20000, SPX500: 5000, DE40: 18000, UK100: 8000,
+        USOIL: 7000, UKOIL: 7000 };
+      const notional = lots * (notionalPerLot[instrument] || 100000);
+      const margin = notional / leverage;
+      document.getElementById('marginRequired').textContent = '$' + fmt(margin, 2);
+      document.getElementById('marginSub').textContent = `at ${leverage}:1 leverage`;
+      marginRow.style.display = '';
+    } else {
+      marginRow.style.display = 'none';
+    }
+
+    // Risk bar
+    const barPct = Math.min(riskPct * 50, 100);
+    const barColor = riskPct <= 1 ? 'var(--success)' : riskPct <= 2 ? 'var(--gold)' : 'var(--danger)';
+
+    // Lot label — adjust for non-forex
+    const isNonForex = ['US30','US100','SPX500','DE40','UK100','USOIL','UKOIL',
+      'AAPL','TSLA','NVDA','MSFT','AMZN','GOOGL','META',
+      'BTCUSD','ETHUSD','SOLUSD','XRPUSD','BNBUSD','DOGEUSD'].includes(instrument);
+    let lotLabel = isNonForex ? 'contract' + (lots !== 1 ? 's' : '')
+      : lots >= 1 ? 'Standard lot' + (lots >= 2 ? 's' : '')
+      : lots >= 0.1 ? 'Mini lot' + (lots * 10 >= 2 ? 's' : '')
+      : 'Micro lot' + (lots * 100 >= 2 ? 's' : '');
+
+    // Update DOM
+    document.getElementById('riskAmt').textContent = '$' + fmt(riskAmt);
+    document.getElementById('riskPctDisplay').textContent = fmt(riskPct, 1) + '% of account';
+    document.getElementById('lotSize').textContent = fmt(lots, lots < 0.01 ? 4 : 2);
+    document.getElementById('lotType').textContent = lotLabel;
+    document.getElementById('units').textContent = isNonForex ? fmt(lots, 2) + ' units' : Math.round(units).toLocaleString();
+    document.getElementById('pipValue').textContent = '$' + fmt(pipValueForLot, 2);
+    document.getElementById('stopDisplay').textContent = fmt(slPips, 1) + ' pips';
+    document.getElementById('stopPoints').textContent = fmt(slPips * 10, 0) + ' points';
+    document.getElementById('targetLevel').textContent = '+' + fmt(target2R, 1) + ' pips';
+    document.getElementById('riskBar').style.width = barPct + '%';
+    document.getElementById('riskBar').style.background = barColor;
+  }
+
+  // Re-calc on any input change
+  ['balance','riskPct','slPips','entryPrice','slPrice','instrument','leverage'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', calc);
+  });
+
+  calc(); // initial
+</script>
+
+</body>
+</html>
