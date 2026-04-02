@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prop Firm Challenge Tracker — DriveByNumbers</title>
+  <meta name="description" content="Free prop firm challenge tracker. Track your daily P&L, max drawdown, profit target progress, and trading days for FTMO, MyForexFunds, The5ers, and more." />
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1c2330;
+      --border: #30363d;
+      --gold: #c8952a;
+      --gold-dim: #a07520;
+      --teal: #2e8b7a;
+      --text: #e6edf3;
+      --text-dim: #8b949e;
+      --red: #f85149;
+      --orange: #d29922;
+      --green: #3fb950;
+      --radius: 10px;
+      --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
+
+    nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 32px; border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; background: var(--bg); z-index: 100;
+    }
+    .nav-logo { font-size: 1.1rem; font-weight: 700; color: var(--gold); text-decoration: none; }
+    .nav-links { display: flex; gap: 24px; align-items: center; }
+    .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links .nav-cta { background: var(--gold); color: #000; padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 0.85rem; }
+
+    .hero { text-align: center; padding: 60px 24px 40px; max-width: 700px; margin: 0 auto; }
+    .hero-badge { display: inline-block; background: rgba(200,149,42,0.15); border: 1px solid rgba(200,149,42,0.3); color: var(--gold); font-size: 0.8rem; padding: 4px 12px; border-radius: 20px; margin-bottom: 16px; letter-spacing: 0.5px; text-transform: uppercase; }
+    .hero h1 { font-size: 2.4rem; font-weight: 800; line-height: 1.15; margin-bottom: 16px; letter-spacing: -0.5px; }
+    .hero h1 span { color: var(--gold); }
+    .hero p { color: var(--text-dim); font-size: 1.05rem; line-height: 1.6; max-width: 560px; margin: 0 auto; }
+
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 24px 60px; }
+
+    /* Setup Panel */
+    .setup-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 28px; margin-bottom: 24px;
+    }
+    .setup-card h2 { font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 20px; }
+
+    .setup-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+
+    .setup-field label { display: block; font-size: 0.82rem; color: var(--text-dim); margin-bottom: 6px; }
+    .setup-field input, .setup-field select {
+      width: 100%; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text); padding: 8px 12px; font-size: 0.95rem;
+    }
+    .setup-field input:focus, .setup-field select:focus { outline: none; border-color: var(--gold); }
+    .setup-field select option { background: var(--surface2); }
+
+    .btn-primary {
+      background: var(--gold); color: #000; border: none; border-radius: 6px;
+      padding: 10px 24px; font-size: 0.9rem; font-weight: 700; cursor: pointer;
+      margin-top: 16px; transition: background 0.2s;
+    }
+    .btn-primary:hover { background: var(--gold-dim); }
+
+    /* Progress section */
+    .progress-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+
+    .prog-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;
+    }
+    .prog-card .prog-label { font-size: 0.78rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .prog-card .prog-val { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; }
+    .prog-card .prog-sub { font-size: 0.8rem; color: var(--text-dim); margin-top: 4px; }
+
+    .prog-bar-track { background: var(--surface2); border-radius: 4px; height: 6px; margin-top: 10px; overflow: hidden; }
+    .prog-bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s; }
+
+    /* Trade Log */
+    .log-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; margin-bottom: 24px;
+    }
+    .log-card h2 { font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
+
+    .add-trade-row {
+      display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 12px; align-items: end; margin-bottom: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .add-trade-row { grid-template-columns: 1fr 1fr; }
+      .hero h1 { font-size: 1.8rem; }
+      nav { padding: 14px 20px; }
+      .nav-links { gap: 12px; }
+    }
+
+    .add-trade-row label { display: block; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 4px; }
+    .add-trade-row input, .add-trade-row select {
+      width: 100%; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text); padding: 8px 12px; font-size: 0.9rem;
+    }
+    .add-trade-row input:focus, .add-trade-row select:focus { outline: none; border-color: var(--gold); }
+
+    .btn-add {
+      background: var(--teal); color: #fff; border: none; border-radius: 6px;
+      padding: 8px 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+      white-space: nowrap; align-self: end; height: 38px;
+    }
+    .btn-add:hover { background: #1f6b5e; }
+
+    /* Trade table */
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th { text-align: left; padding: 8px 12px; color: var(--text-dim); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
+    td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+    tr:last-child td { border-bottom: none; }
+    .pos { color: var(--green); font-weight: 600; }
+    .neg { color: var(--red); font-weight: 600; }
+
+    .btn-del { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 1rem; padding: 0 4px; }
+    .btn-del:hover { color: var(--red); }
+
+    /* Status Banner */
+    .status-banner {
+      padding: 16px 20px; border-radius: var(--radius); margin-bottom: 24px;
+      font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 10px;
+    }
+    .banner-pass { background: rgba(63,185,80,0.15); border: 1px solid rgba(63,185,80,0.3); color: var(--green); }
+    .banner-fail { background: rgba(248,81,73,0.15); border: 1px solid rgba(248,81,73,0.3); color: var(--red); }
+    .banner-active { background: rgba(200,149,42,0.15); border: 1px solid rgba(200,149,42,0.3); color: var(--gold); }
+
+    .firm-presets { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .firm-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 5px 12px; font-size: 0.8rem; color: var(--text-dim); cursor: pointer; transition: all 0.2s; }
+    .firm-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    footer { text-align: center; padding: 32px; color: var(--text-dim); font-size: 0.82rem; border-top: 1px solid var(--border); }
+    footer a { color: var(--gold); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">DriveByNumbers</a>
+  <div class="nav-links">
+    <a href="/">← Free Tools</a>
+    <a href="/academy.html" style="color:var(--muted);text-decoration:none;font-size:14px;">Academy</a>
+    <a href="/position-size-calculator.html">Position Sizer</a>
+    <a href="/risk-of-ruin.html">Risk of Ruin</a>
+    <a href="https://drivebynumbers.gumroad.com/l/pocket-day-trading-manual" target="_blank" class="nav-cta">Get the Manual — $37</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">Free Tool</div>
+  <h1>Prop Firm <span>Challenge</span> Tracker</h1>
+  <p>Track your daily P&L, max drawdown remaining, profit target progress, and minimum trading days. Works with FTMO, The5ers, MyFundedFX, and any prop firm.</p>
+</div>
+
+<div class="container">
+
+  <!-- Setup -->
+  <div class="setup-card">
+    <h2>Challenge Setup</h2>
+    <div style="margin-bottom:12px; font-size:0.82rem; color:var(--text-dim);">Load a preset or enter custom rules:</div>
+    <div class="firm-presets">
+      <div class="firm-btn" onclick="loadFirm('ftmo10')">FTMO $10K</div>
+      <div class="firm-btn" onclick="loadFirm('ftmo25')">FTMO $25K</div>
+      <div class="firm-btn" onclick="loadFirm('ftmo100')">FTMO $100K</div>
+      <div class="firm-btn" onclick="loadFirm('the5ers')">The5ers</div>
+      <div class="firm-btn" onclick="loadFirm('myfunded')">MyFundedFX</div>
+      <div class="firm-btn" onclick="loadFirm('custom')">Custom</div>
+    </div>
+
+    <div class="setup-grid" style="margin-top:20px;">
+      <div class="setup-field">
+        <label>Account Size ($)</label>
+        <input type="number" id="account-size" value="10000" oninput="updateDashboard()">
+      </div>
+      <div class="setup-field">
+        <label>Profit Target (%)</label>
+        <input type="number" id="profit-target-pct" value="10" step="0.5" oninput="updateDashboard()">
+      </div>
+      <div class="setup-field">
+        <label>Max Daily Loss (%)</label>
+        <input type="number" id="max-daily-loss" value="5" step="0.5" oninput="updateDashboard()">
+      </div>
+      <div class="setup-field">
+        <label>Max Total Drawdown (%)</label>
+        <input type="number" id="max-drawdown" value="10" step="0.5" oninput="updateDashboard()">
+      </div>
+      <div class="setup-field">
+        <label>Min Trading Days</label>
+        <input type="number" id="min-days" value="4" oninput="updateDashboard()">
+      </div>
+      <div class="setup-field">
+        <label>Challenge Duration (days)</label>
+        <input type="number" id="duration" value="30" oninput="updateDashboard()">
+      </div>
+    </div>
+  </div>
+
+  <!-- Status Banner -->
+  <div class="status-banner banner-active" id="status-banner">
+    📊 Challenge in progress — keep trading
+  </div>
+
+  <!-- Progress Cards -->
+  <div class="progress-grid">
+    <div class="prog-card">
+      <div class="prog-label">Profit Progress</div>
+      <div class="prog-val" id="profit-prog-val" style="color:var(--green);">$0</div>
+      <div class="prog-sub" id="profit-prog-sub">Target: $1,000 (10%)</div>
+      <div class="prog-bar-track"><div class="prog-bar-fill" id="profit-bar" style="width:0%; background:var(--green);"></div></div>
+    </div>
+    <div class="prog-card">
+      <div class="prog-label">Daily Loss Remaining</div>
+      <div class="prog-val" id="daily-remaining-val" style="color:var(--green);">$500</div>
+      <div class="prog-sub" id="daily-remaining-sub">Max daily loss: $500 (5%)</div>
+      <div class="prog-bar-track"><div class="prog-bar-fill" id="daily-bar" style="width:100%; background:var(--green);"></div></div>
+    </div>
+    <div class="prog-card">
+      <div class="prog-label">Drawdown Used</div>
+      <div class="prog-val" id="dd-used-val">$0</div>
+      <div class="prog-sub" id="dd-used-sub">Max allowed: $1,000 (10%)</div>
+      <div class="prog-bar-track"><div class="prog-bar-fill" id="dd-bar" style="width:0%; background:var(--green);"></div></div>
+    </div>
+    <div class="prog-card">
+      <div class="prog-label">Trading Days</div>
+      <div class="prog-val" id="trading-days-val">0</div>
+      <div class="prog-sub" id="trading-days-sub">Minimum required: 4</div>
+      <div class="prog-bar-track"><div class="prog-bar-fill" id="days-bar" style="width:0%; background:var(--gold);"></div></div>
+    </div>
+  </div>
+
+  <!-- Add Trade -->
+  <div class="log-card">
+    <h2>Daily P&L Log</h2>
+    <div class="add-trade-row">
+      <div>
+        <label>Date</label>
+        <input type="date" id="trade-date">
+      </div>
+      <div>
+        <label>P&L ($)</label>
+        <input type="number" id="trade-pnl" placeholder="+250 or -100" step="0.01">
+      </div>
+      <div>
+        <label>Note (optional)</label>
+        <input type="text" id="trade-note" placeholder="e.g. XAUUSD long">
+      </div>
+      <div>
+        <button class="btn-add" onclick="addTrade()">+ Add Day</button>
+      </div>
+    </div>
+
+    <table id="trade-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Daily P&L</th>
+          <th>Cumulative P&L</th>
+          <th>Note</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="trade-tbody">
+        <tr><td colspan="5" style="text-align:center; color:var(--text-dim); padding:24px;">No trades logged yet. Add your first trading day above.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<footer>
+  <p>More free tools: <a href="/position-size-calculator.html">Position Size Calculator</a> · <a href="/mt4-analyzer.html">MT4 Analyzer</a> · <a href="/risk-of-ruin.html">Risk of Ruin</a></p>
+  <p style="margin-top:8px;">Built by <a href="/">DriveByNumbers</a> · <a href="https://drivebynumbers.gumroad.com/l/pocket-day-trading-manual" target="_blank">Get the $37 Manual</a></p>
+</footer>
+
+<script>
+  const FIRMS = {
+    ftmo10:   { size: 10000, target: 10, daily: 5, dd: 10, minDays: 4, duration: 30 },
+    ftmo25:   { size: 25000, target: 10, daily: 5, dd: 10, minDays: 4, duration: 30 },
+    ftmo100:  { size: 100000, target: 10, daily: 5, dd: 10, minDays: 4, duration: 30 },
+    the5ers:  { size: 10000, target: 8, daily: 4, dd: 8, minDays: 3, duration: 60 },
+    myfunded: { size: 10000, target: 10, daily: 5, dd: 12, minDays: 5, duration: 30 },
+    custom:   null
+  };
+
+  let trades = JSON.parse(localStorage.getItem('dbn-prop-trades') || '[]');
+
+  function loadFirm(key) {
+    const f = FIRMS[key];
+    if (!f) return;
+    document.getElementById('account-size').value = f.size;
+    document.getElementById('profit-target-pct').value = f.target;
+    document.getElementById('max-daily-loss').value = f.daily;
+    document.getElementById('max-drawdown').value = f.dd;
+    document.getElementById('min-days').value = f.minDays;
+    document.getElementById('duration').value = f.duration;
+    updateDashboard();
+  }
+
+  function saveTrades() {
+    localStorage.setItem('dbn-prop-trades', JSON.stringify(trades));
+  }
+
+  function addTrade() {
+    const date = document.getElementById('trade-date').value;
+    const pnl = parseFloat(document.getElementById('trade-pnl').value);
+    const note = document.getElementById('trade-note').value;
+    if (!date || isNaN(pnl)) { alert('Please enter a date and P&L amount.'); return; }
+    trades.push({ date, pnl, note });
+    trades.sort((a, b) => new Date(a.date) - new Date(b.date));
+    document.getElementById('trade-pnl').value = '';
+    document.getElementById('trade-note').value = '';
+    saveTrades();
+    updateDashboard();
+  }
+
+  function deleteTrade(idx) {
+    trades.splice(idx, 1);
+    saveTrades();
+    updateDashboard();
+  }
+
+  function updateDashboard() {
+    const accountSize = parseFloat(document.getElementById('account-size').value) || 10000;
+    const targetPct = parseFloat(document.getElementById('profit-target-pct').value) || 10;
+    const maxDailyPct = parseFloat(document.getElementById('max-daily-loss').value) || 5;
+    const maxDDPct = parseFloat(document.getElementById('max-drawdown').value) || 10;
+    const minDays = parseInt(document.getElementById('min-days').value) || 4;
+
+    const targetAmt = accountSize * targetPct / 100;
+    const maxDailyAmt = accountSize * maxDailyPct / 100;
+    const maxDDAmt = accountSize * maxDDPct / 100;
+
+    // Calculate cumulative P&L
+    let cumPnL = 0;
+    let maxCum = 0;
+    let maxDrawdown = 0;
+    let todayPnL = 0;
+    const today = new Date().toISOString().split('T')[0];
+
+    const tbody = document.getElementById('trade-tbody');
+    if (trades.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-dim); padding:24px;">No trades logged yet. Add your first trading day above.</td></tr>';
+    } else {
+      let rows = '';
+      trades.forEach((t, i) => {
+        cumPnL += t.pnl;
+        if (cumPnL > maxCum) maxCum = cumPnL;
+        const dd = maxCum - cumPnL;
+        if (dd > maxDrawdown) maxDrawdown = dd;
+        if (t.date === today) todayPnL = t.pnl;
+        const pnlClass = t.pnl >= 0 ? 'pos' : 'neg';
+        const cumClass = cumPnL >= 0 ? 'pos' : 'neg';
+        rows += `<tr>
+          <td>${t.date}</td>
+          <td class="${pnlClass}">${t.pnl >= 0 ? '+' : ''}$${t.pnl.toFixed(2)}</td>
+          <td class="${cumClass}">${cumPnL >= 0 ? '+' : ''}$${cumPnL.toFixed(2)}</td>
+          <td style="color:var(--text-dim)">${t.note || '—'}</td>
+          <td><button class="btn-del" onclick="deleteTrade(${i})">✕</button></td>
+        </tr>`;
+      });
+      tbody.innerHTML = rows;
+    }
+
+    const tradingDays = trades.length;
+    const dailyRemaining = maxDailyAmt - Math.max(0, -todayPnL);
+
+    // Profit progress
+    const profitPct = Math.max(0, Math.min(100, (cumPnL / targetAmt) * 100));
+    document.getElementById('profit-prog-val').textContent = (cumPnL >= 0 ? '+' : '') + '$' + cumPnL.toFixed(0);
+    document.getElementById('profit-prog-val').style.color = cumPnL >= 0 ? 'var(--green)' : 'var(--red)';
+    document.getElementById('profit-prog-sub').textContent = `Target: $${targetAmt.toFixed(0)} (${targetPct}%) — ${profitPct.toFixed(0)}% there`;
+    document.getElementById('profit-bar').style.width = profitPct + '%';
+    document.getElementById('profit-bar').style.background = cumPnL >= targetAmt ? 'var(--green)' : 'var(--gold)';
+
+    // Daily loss remaining
+    const dailyUsedPct = Math.max(0, Math.min(100, ((maxDailyAmt - dailyRemaining) / maxDailyAmt) * 100));
+    const dailyRemainingPct = 100 - dailyUsedPct;
+    document.getElementById('daily-remaining-val').textContent = '$' + Math.max(0, dailyRemaining).toFixed(0);
+    document.getElementById('daily-remaining-val').style.color = dailyRemaining < maxDailyAmt * 0.3 ? 'var(--red)' : dailyRemaining < maxDailyAmt * 0.6 ? 'var(--orange)' : 'var(--green)';
+    document.getElementById('daily-remaining-sub').textContent = `Max daily loss: $${maxDailyAmt.toFixed(0)} (${maxDailyPct}%)`;
+    document.getElementById('daily-bar').style.width = dailyRemainingPct + '%';
+    document.getElementById('daily-bar').style.background = dailyRemainingPct < 30 ? 'var(--red)' : dailyRemainingPct < 60 ? 'var(--orange)' : 'var(--green)';
+
+    // Drawdown
+    const ddPct = Math.min(100, (maxDrawdown / maxDDAmt) * 100);
+    document.getElementById('dd-used-val').textContent = '$' + maxDrawdown.toFixed(0);
+    document.getElementById('dd-used-val').style.color = ddPct > 80 ? 'var(--red)' : ddPct > 50 ? 'var(--orange)' : 'var(--green)';
+    document.getElementById('dd-used-sub').textContent = `Max allowed: $${maxDDAmt.toFixed(0)} (${maxDDPct}%) — ${ddPct.toFixed(0)}% used`;
+    document.getElementById('dd-bar').style.width = ddPct + '%';
+    document.getElementById('dd-bar').style.background = ddPct > 80 ? 'var(--red)' : ddPct > 50 ? 'var(--orange)' : 'var(--green)';
+
+    // Trading days
+    const daysPct = Math.min(100, (tradingDays / minDays) * 100);
+    document.getElementById('trading-days-val').textContent = tradingDays;
+    document.getElementById('trading-days-sub').textContent = `Minimum required: ${minDays} days`;
+    document.getElementById('days-bar').style.width = daysPct + '%';
+    document.getElementById('days-bar').style.background = tradingDays >= minDays ? 'var(--green)' : 'var(--gold)';
+
+    // Status banner
+    const banner = document.getElementById('status-banner');
+    const failed = maxDrawdown >= maxDDAmt || dailyRemaining <= 0;
+    const passed = cumPnL >= targetAmt && tradingDays >= minDays;
+
+    if (failed) {
+      banner.className = 'status-banner banner-fail';
+      banner.textContent = '✗ Challenge Failed — Drawdown or daily loss limit breached';
+    } else if (passed) {
+      banner.className = 'status-banner banner-pass';
+      banner.textContent = '✓ Challenge Passed — Profit target reached with ' + tradingDays + ' trading days';
+    } else {
+      banner.className = 'status-banner banner-active';
+      const remaining = (targetAmt - cumPnL).toFixed(0);
+      const daysLeft = minDays - tradingDays;
+      banner.textContent = `📊 In Progress — $${remaining} to target${daysLeft > 0 ? ', ' + daysLeft + ' more trading days needed' : ''}`;
+    }
+  }
+
+  // Set today's date as default
+  document.getElementById('trade-date').value = new Date().toISOString().split('T')[0];
+
+  updateDashboard();
+</script>
+</body>
+</html>
